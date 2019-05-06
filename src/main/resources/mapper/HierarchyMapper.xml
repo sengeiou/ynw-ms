@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.HierarchyMapper">
+    <resultMap id="generalDutyResultMap" type="com.ynw.system.entity.Hierarchy">
+        <id column="ac_u_level_id" property="acULevelId"/>
+        <result column="no" property="no"/>
+        <result column="name" property="name"/>
+        <result property="needGetBean" column="need_get_bean"/>
+        <result property="needPayoutBean" column="need_payout_bean"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="conditionQueryHierarchy" resultMap="generalDutyResultMap">
+      SELECT * FROM t_ac_u_level
+      <where>
+          <if test="null != hierarchy.no">
+              `no`=#{hierarchy.no}
+          </if>
+          <if test="null != hierarchy.name">
+              AND `name` LIKE CONCAT('%',#{hierarchy.name},'%')
+          </if>
+      </where>
+        ORDER BY `no` ASC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(ac_u_level_id) FROM t_ac_u_level
+        <where>
+            <if test="null != no">
+                `no`=#{no}
+            </if>
+            <if test="null != name">
+                AND `name` LIKE CONCAT('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+    <select id="findByNoMax" resultMap="generalDutyResultMap">
+        SELECT * FROM t_ac_u_level ORDER BY `no` DESC
+    </select>
+
+</mapper>

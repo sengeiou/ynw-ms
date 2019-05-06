@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title> - 数据表格</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="../../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+
+    <link href="../../css/animate.css" rel="stylesheet">
+    <link href="../../css/style.css?v=4.1.0" rel="stylesheet">
+
+    <script type="text/javascript" src="../../../js/jquery.js"></script>
+    <script type="text/javascript" src="user_details.js"></script>
+    <script type="text/javascript" src="../../js/getDate.js"></script>
+    <link rel="stylesheet" href="../../../css/page/easyhelper.min.css">
+    <!--<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"></script>-->
+    <script src="../../js/jquery-3.3.1.min.js"></script>
+    <script src="../../../js/page/jquery.transit.min.js"></script>
+    <script src="../../../js/page/es6-shim.min.js"></script>
+    <script src="../../../js/page/easyhelper.min.js"></script>
+    <script src="../../../js/page/comment.js"></script>
+    <script type="text/javascript" src="../../../js/layer-v3.0.3/layer/layer.js"></script>
+    <link rel="stylesheet" href="../../../css/comment.css">
+    <style>
+        #add-role select {
+            width: 200px;
+            height: 90%;
+        }
+        .delete-button input {
+            margin-left: 10%;
+        }
+        .data-button input {
+            margin-left: 10%;
+        }
+        #user_body {
+            width: 90%;
+            height: 900px;
+            margin: 5%;
+            border: 1px solid white;
+            font-size: 0.8vw;
+        }
+        .user_body_left {
+            width: 30%;
+            height: 90%;
+            float: left;
+        }
+        #user_body_left_basics {
+            width: 96%;
+            height: 350px;
+            margin-top: 20px;
+            margin-left: 2%;
+            border: 1px solid black;
+        }
+        #user_body_right {
+            width: 60%;
+            height: 100%;
+            float: left;
+            margin-top: 20px;
+            margin-left: 5%;
+        }
+        #user_details_body {
+            width: 100%;
+            height: 70%;
+        }
+        #user_img {
+            margin-left: 4%;
+            margin-top: 5%;
+            float: left;
+            width: 28%;
+            height: 90%;
+            word-wrap:break-word;
+        }
+        #user_details {
+            margin-top: 5%;
+            margin-left: 4%;
+            float: left;
+            height: 115%;
+            width: 60%;
+        }
+        .user_img {
+            width: 100%;
+            height: 260px;
+            border: 1px solid black;
+            margin-top: 7%;
+        }
+        .user_set {
+            width: 100%;
+            height: 260px;
+            margin-top: 3%;
+        }
+        #img {
+            height: 82%;
+            width: 100%;
+        }
+        .img-body {
+            margin-top: 1.5%;
+            margin-left: 2%;
+            width: 17.3%;
+            height: 190px;
+            float: left;
+        }
+        .img-body-content {
+            width: 100%;
+            height: 80%;
+        }
+        .img-body-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .img-body-button {
+            width: 100%;
+            height: 20%;
+        }
+        .img-body-button input {
+            width: 35%;
+            font-size: 0.8vw;
+            padding: 0px;
+            margin-left: 8%;
+        }
+        .img-body-button-one {
+            width: 100%;
+            height: 20%;
+        }
+        .img-body-button-one input {
+            width: 35%;
+            font-size: 0.8vw;
+            padding: 0px;
+            margin-left: 33%;
+        }
+        .set {
+            height: 110%;
+            width: 47%;
+            border: 1px solid black;
+            float: left;
+        }
+        .user_details_set {
+            width: 100%;
+            height: 100%;
+        }
+        .push div {
+            float: left;
+            margin-top: 2%;
+            margin-left: 2%;
+        }
+        .push {
+            width: 73%;
+            height: 14%;
+            margin-left: 13%;
+        }
+        .push .label {
+            width: 21%;
+        }
+        .privacy {
+            margin-left: 5%;
+        }
+        .privacy .push {
+            margin-left: 7%;
+            width: 87%;
+        }
+        .privacy .label {
+            width: 18%;
+        }
+        .tip {
+            font-size: 0.8vw;
+        }
+        .message-button {
+            width: 60%;
+            height: 20%;
+            margin: 0px auto;
+            margin-top: 5%;
+        }
+        .message-button input {
+            width: 15%;
+            margin-left: 10%;
+            font-size: 0.8vw;
+        }
+        .screenshot-user {
+            width: 30%;
+            height: 500px;
+            position: fixed;
+            z-index: 102;
+            margin-left: 35%;
+            border: 1px solid black;
+            background: white;
+            font-size: 1vw;
+            display: none;
+        }
+        .screenshot-user-body {
+            width: 80%;
+            height: 70%;
+            margin: 0px auto;
+        }
+        .screenshot-user-body img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .id_audit {
+            width: 100%;
+            height: 260px;
+            border: 1px solid black;
+        }
+        .id_audit_content {
+            width: 35%;
+            height: 55%;
+            float: left;
+            margin-top: 5%;
+            margin-left: 5%;
+        }
+        .id_audit_content img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .id_audit_button {
+            width: 15%;
+            height: 55%;
+            margin-right: 2%;
+            margin-top: 5%;
+            float: right;
+        }
+        .id_audit_button input {
+            width: 60%;
+            margin-left: 10%;
+            margin-top: 20%;
+        }
+        .user_label_all {
+            width: 96%;
+            height: 80px;
+            border: 1px solid black;
+            margin-left: 2%;
+            margin-top: 5%;
+            padding-top: 20px;
+        }
+        .user_label {
+            width: 100%;
+            height: 40px;
+        }
+        .user_label div{
+            float: left;
+            margin-top: 1%;
+            margin-left: 1%;
+            width: 12%;
+            height: 50%;
+        }
+        .label {
+            /*width: 14%;*/
+            /*height: 50%;*/
+            line-height: 20px;
+            color: white;
+            font-size: 0.8vw;
+            background: #0c74e3;
+        }
+        .self_label {
+            background: orange;
+        }
+        .operation-data {
+            width: 30%;
+            height: 290px;
+            border: 1px solid black;
+            margin-left: 35%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 105;
+            background: white;
+            display: none;
+        }
+        .data-button {
+            width: 70%;
+            margin-left: 15%;
+            margin-top: 8%;
+        }
+        .data-button input {
+            margin-left: 15%;
+            width: 15%;
+        }
+        .role-body {
+            margin: 8% 20%;
+        }
+        .role-body select {
+            margin: 18px;
+            width: 70%;
+            height: 30px;
+            border-radius: 5px;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+<div class="operation-data" id="idCardAudit">
+    <div class="data-top">身份证审核不通过</div>
+    <div class="role-body">
+        审核不通过原因：
+        <select name="content">
+            <option value="">---请选择---</option>
+        </select>
+    </div>
+    <div class="button data-button">
+        <input id="id-card-confirm" type="button" value="确定"/>
+        <input class="cancel" type="button" value="取消"/>
+    </div>
+</div>
+<div class="operation-data" id="photoAudit">
+    <div class="data-top">照片审核不通过</div>
+    <div class="role-body">
+        审核不通过原因：
+        <select name="content">
+            <option value="">---请选择---</option>
+        </select>
+    </div>
+    <div class="button data-button">
+        <input id="photo-confirm" type="button" value="确定"/>
+        <input class="cancel" type="button" value="取消"/>
+    </div>
+</div>
+<!--用户截图-->
+<div class="screenshot-user" id="user-img">
+    <div class="data-top">用户截图</div>
+    <div class="screenshot-user-body">
+        <img src="">
+    </div>
+    <div class="message-button">
+        <input class="screenshot-cancel"  type="button" value="确定"/>
+        <input class="screenshot-cancel" type="button" value="取消"/>
+    </div>
+</div>
+<!--用户头像截图-->
+<div class="screenshot-user" id="user-head-portrait">
+    <div class="data-top">用户头像截图</div>
+    <div class="screenshot-user-body">
+        <img src="">
+    </div>
+    <div class="message-button">
+        <input id="replace-head"  type="button" value="头像不符合"/>
+        <input class="screenshot-cancel" type="button" value="取消"/>
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <input class="back" type="button" value="返回" style="width: 100px"/>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div id="user_body">
+                    <div class="user_body_left">
+                        <div id="user_body_left_basics">
+                            <div class="data-top">基本资料</div>
+                            <input id="acUserId" type="hidden" th:value="${acUserId}">
+                            <input id="URL" type="hidden" th:value="${URL}">
+                            <input id="msResourceId" type="hidden" th:value="${msResourceId}">
+                            <input id="name" type="hidden" th:value="${name}">
+                            <input id="phone" type="hidden" th:value="${phone}">
+                            <input id="no" type="hidden" th:value="${no}">
+                            <input id="sex" type="hidden" th:value="${sex}">
+                            <input id="idVerifyStatus" type="hidden" th:value="${idVerifyStatus}">
+                            <input id="province" type="hidden" th:value="${province}">
+                            <input id="city" type="hidden" th:value="${city}">
+                            <input id="status" type="hidden" th:value="${status}">
+                            <input id="imageStatus" type="hidden" th:value="${imageStatus}">
+                            <input id="num" type="hidden" th:value="${num}">
+                            <div id="user_details_body">
+                                <div id="user_img">
+                                    <img src="" style="width: 100%;height: 50%;object-fit: contain;">
+                                    <div>
+                                        个性签名:<br/><span></span>
+                                    </div>
+                                </div>
+                                <div id="user_details">
+                                    昵称：<span></span><br/>
+                                    手机号码：<span></span><br/>
+                                    用户编号：<span></span><br/>
+                                    性别：<span></span><br/>
+                                    生日：<span></span><br/>
+                                    年龄：<span></span>岁<br/>
+                                    星座：<span></span><br/>
+                                    行业：<span></span><br/>
+                                    学历：<span></span><br/>
+                                    高校：<span></span><br/>
+                                    故乡：<span></span><br/>
+                                    所在城市：<span></span><br/>
+                                    注册时间：<span></span><br/>
+                                    状态：<span></span><br/>
+                                    推荐人：<span></span><br/>
+                                    身份证：<span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="user_label_all">
+                            <!--<div id="interest" class="user_label">-->
+                                <!--<div>期望生活经历:</div>-->
+                                <!--<div class="interest label">南昌话题</div>-->
+                                <!--<div class="interest label">南昌话题</div>-->
+                                <!--<div class="interest label">南昌话题</div>-->
+                                <!--<div class="interest label">南昌话题</div>-->
+                            <!--</div>-->
+                            <!--<div id="self_label" class="user_label">-->
+                            <!--<div>我的标签:</div>-->
+                            <!--<div class="self_label label">南昌</div>-->
+                            <!--<div class="self_label label">南昌</div>-->
+                            <!--<div class="self_label label">南昌</div>-->
+                            <!--<div class="self_label label">南昌</div>-->
+                            <!--</div>-->
+                        </div>
+                    </div>
+                    <div id="user_body_right">
+                        <div class="id_audit">
+                            <div class="data-top">身份证审核</div>
+                            <div class="id_audit_content idImageFrontUrl">
+                            </div>
+                            <div class="id_audit_content idImageBackUrl">
+                            </div>
+                            <div class="id_audit_button">
+                                <input class="IDCardPass" type="button" value="通过" />
+                                <input class="IDCardNoPass" type="button" value="不通过" />
+                            </div>
+                        </div>
+                        <div class="user_set">
+                            <div class="set">
+                                <div class="data-top">推送消息设置</div>
+                                <div class="user_details_set">
+                                    <div class="push admireFlag" >
+                                        <div class="tip">点 赞 通 知 : </div>
+                                        <div class="label open">开启</div>
+                                        <div class="label closes">关闭</div>
+                                    </div>
+                                    <div class="push attentionFlag">
+                                        <div class="tip">关 注 通 知 : </div>
+                                        <div class="label open">开启</div>
+                                        <div class="label closes">关闭</div>
+                                    </div>
+                                    <div class="push commentFlag">
+                                        <div class="tip">评 论 通 知 : </div>
+                                        <div class="label open">开启</div>
+                                        <div class="label closes">关闭</div>
+                                    </div>
+                                    <div class="push dStateFlag">
+                                        <div class="tip">动 态 通 知 : </div>
+                                        <div class="label open">开启</div>
+                                        <div class="label closes">关闭</div>
+                                    </div>
+                                    <div class="push vUpdateFlag">
+                                        <div class="tip">版本更新通知:</div>
+                                        <div class="label open">开启</div>
+                                        <div class="label closes">关闭</div>
+                                    </div>
+                                    <div class="push addFriendFlag">
+                                        <div class="tip">好友请求通知:</div>
+                                        <div class="label open">开启</div>
+                                        <div class="label closes">关闭</div>
+                                    </div >
+                                </div>
+                            </div>
+                            <div class="set privacy">
+                                <div class="data-top">隐私设置</div>
+                                <div class="user_details_set">
+                                    <div class="push pSearchFlag">
+                                        <div class="tip">通过手机号搜索到我: </div>
+                                        <div class="label open">开启</div>
+                                        <div class="label closes">关闭</div>
+                                    </div>
+                                    <div class="push noSearchFlag">
+                                        <div class="tip">通过ID号搜索到我:</div>
+                                        <div class="label open">开启</div>
+                                        <div class="label closes">关闭</div>
+                                    </div>
+                                    <div class="push cCommendFlag">
+                                        <div class="tip">向我推荐通讯录好友:</div>
+                                        <div class="label open">开启</div>
+                                        <div class="label closes">关闭</div>
+                                    </div >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="user_img">
+                            <div class="data-top">用户相片</div>
+                            <div id="img">
+                                <!--<div class="img-body">-->
+                                    <!--<div class="img-body-content">-->
+                                        <!--<img src="../../img/p3.jpg">-->
+                                    <!--</div>-->
+                                    <!--<div class="img-body-button">-->
+                                        <!--<input name="imageId" type="hidden">-->
+                                        <!--<input class="get-through" type="button" value="通过">-->
+                                        <!--<input class="no-pass" type="button" value="不通过">-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="img-body">-->
+                                <!--<div class="img-body-content">-->
+                                <!--<img src="../../img/p3.jpg">-->
+                                <!--</div>-->
+                                <!--<div class="img-body-button">-->
+                                <!--<input name="imageId" type="hidden">-->
+                                <!--<input type="button" value="通过">-->
+                                <!--<input type="button" value="不通过">-->
+                                <!--</div>-->
+                                <!--&lt;!&ndash;<div class="img-body-button-one">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<input type="button" value="通过">&ndash;&gt;-->
+                                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                                <!--</div>-->
+                                <!--<div class="img-body">-->
+                                <!--<div class="img-body-content">-->
+                                <!--<img src="../../img/p3.jpg">-->
+                                <!--</div>-->
+                                <!--<div class="img-body-button">-->
+                                <!--<input type="button" value="通过">-->
+                                <!--<input type="button" value="不通过">-->
+                                <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="img-body">-->
+                                <!--<div class="img-body-content">-->
+                                <!--<img src="../../img/p3.jpg">-->
+                                <!--</div>-->
+                                <!--<div class="img-body-button">-->
+                                <!--<input type="button" value="通过">-->
+                                <!--<input type="button" value="不通过">-->
+                                <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="img-body">-->
+                                <!--<div class="img-body-content">-->
+                                <!--<img src="../../img/p3.jpg">-->
+                                <!--</div>-->
+                                <!--<div class="img-body-button">-->
+                                <!--<input type="button" value="通过">-->
+                                <!--<input type="button" value="不通过">-->
+                                <!--</div>-->
+                                <!--</div>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="../../js/jquery.min.js?v=2.1.4"></script>
+<script src="../../js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<script src="../../js/plugins/jeditable/jquery.jeditable.js"></script>
+
+<!-- 自定义js -->
+<script src="../../js/content.js?v=1.0.0"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title> - 数据表格</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="../../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+
+    <link href="../../css/animate.css" rel="stylesheet">
+    <link href="../../css/style.css?v=4.1.0" rel="stylesheet">
+
+    <script type="text/javascript" src="../../../js/jquery.js"></script>
+    <script type="text/javascript" src="user_label.js"></script>
+    <script type="text/javascript" src="../../js/getDate.js"></script>
+    <link rel="stylesheet" href="../../../css/page/easyhelper.min.css">
+    <!--<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"></script>-->
+    <script src="../../js/jquery-3.3.1.min.js"></script>
+    <script src="../../../js/page/jquery.transit.min.js"></script>
+    <script src="../../../js/page/es6-shim.min.js"></script>
+    <script src="../../../js/page/easyhelper.min.js"></script>
+    <script src="../../../js/page/comment.js"></script>
+    <script type="text/javascript" src="../../../js/layer-v3.0.3/layer/layer.js"></script>
+    <link rel="stylesheet" href="../../../css/comment.css">
+    <style>
+        .update-body {
+            width: 80%;
+            height: 45%;
+            margin: 0px auto;
+            border-top:1px dashed grey;
+        }
+        #add-role select {
+            width: 200px;
+            height: 90%;
+        }
+        .delete-button {
+            width: 68%;
+            margin-left: 15%;
+            margin-top: 8%;
+        }
+        .delete-button input {
+            margin-left: 10%;
+        }
+        .delete-body {
+            margin: 10% 25%;
+            font-size: 15px;
+            font-weight:bold;
+        }
+        #nowPage-date {
+            width: 420px;
+            height: 350px;
+            border: 1px solid black;
+            margin-left: 30%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 5;
+            background: white;
+            display: none;
+        }
+        .nowPage-left {
+            width: 55%;
+            height: 260px;
+            margin: 20px;
+            border: 1px solid black;
+            float: left;
+            overflow: hidden;
+            overflow-y:scroll;
+        }
+        .nowPage-right {
+            width: 25%;
+            height: 260px;
+            float: right;
+            margin: 20px;
+        }
+        .nowPage-right input {
+            width: 60px;
+            margin-bottom: 10px;
+        }
+        .operation-data {
+            width: 500px;
+            height: 300px;
+            border: 1px solid black;
+            margin-left: 30%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 6;
+            background: white;
+            display: none;
+            font-size: 1vw;
+        }
+        .role-body {
+            margin: 0px auto;
+            margin-top: 8%;
+            width: 80%;
+        }
+        .role-body select {
+            border-radius: 5px;
+            height: 30px;
+        }
+        .role-body input,.role-body select {
+            width: 45%;
+            margin: 10px;
+        }
+        .data-button {
+            width: 68%;
+            margin-left: 15%;
+            margin-top: 8%;
+        }
+        .data-button input {
+            margin-left: 10%;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div id="nowPage-date">
+        <div class="data-top">用户标签分类管理</div>
+        <div>
+            <div class="nowPage-left">
+                <select style="width: 110%">
+
+                </select>
+            </div>
+            <div class="nowPage-right">
+                <!--<input type="button" value="新增">-->
+                <!--<input type="button" value="编辑">-->
+                <!--<input type="button" value="删除">-->
+                <!--<input type="button" value="上移">-->
+                <!--<input type="button" value="下移">-->
+                <!--<input class="cancel" type="button" value="退出">-->
+            </div>
+        </div>
+    </div>
+
+    <!--添加用户标签分类-->
+    <div class="operation-data unified-closed" id="add-label-classify-data">
+        <div class="data-top">添加用户标签分类</div>
+        <div class="role-body" id="add-label-classify">
+            用户标签分类名称：<input name="name" maxlength="6" type="text"/><br/>
+            用户标签分类 key：<input name="key" type="text"/>
+        </div>
+        <div class="button data-button">
+            <input id="add-label-classify-confirm" type="button" value="确定"/>
+            <input class="report-cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--编辑用户标签分类-->
+    <div class="operation-data unified-closed" id="update-label-classify-data">
+        <div class="data-top">编辑用户标签</div>
+        <div class="role-body" id="update-label-classify">
+            用户标签分类名称：<input name="name" maxlength="6" type="text"/><br/>
+            用户标签分类key：<input name="key" type="text"/>
+        </div>
+        <div class="button data-button">
+            <input id="update-label-classify-confirm" type="button" value="确定"/>
+            <input class="report-cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--删除用户标签分类-->
+    <div class="operation-data unified-closed" id="delete-label-classify-data">
+        <div class="data-top">删除用户标签</div>
+        <div class="role-body" id="delete-label-classify">
+            <div class="delete-body">确定要删除用户标签分类【<span></span>】吗？</div>
+        </div>
+        <div class="button data-button">
+            <input id="delete-label-classify-confirm" type="button" value="确定"/>
+            <input class="report-cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--添加用户标签-->
+    <div class="operation-data unified-closed" id="add-report-classify-data">
+        <div class="data-top">添加用户标签</div>
+        <div class="role-body user-label" id="add-report">
+            用户标签名称：<input name="name" maxlength="4" type="text"/><br/>
+            用户标签分类：
+            <select name="acLabelCtgyId">
+                <option value="">--请选择--</option>
+            </select>
+        </div>
+        <div class="button data-button">
+            <input id="add-report-confirm" type="button" value="确定"/>
+            <input class="report-cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--编辑用户标签-->
+    <div class="operation-data unified-closed" id="update-report-classify-data">
+        <div class="data-top">编辑用户标签</div>
+        <div class="role-body user-label" id="update-report">
+            用户标签名称：<input name="name" maxlength="4" type="text"/><br/>
+            用户标签分类：
+            <select name="acLabelCtgyId">
+                <option value="">--请选择--</option>
+            </select>
+        </div>
+        <div class="button data-button">
+            <input id="update-report-confirm" type="button" value="确定"/>
+            <input class="report-cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--删除用户标签-->
+    <div class="operation-data unified-closed" id="delete-data">
+        <div class="data-top">删除用户标签</div>
+        <div class="role-body" id="delete-label">
+            <div class="delete-body">确定要删除用户标签分类【<span></span>】吗？</div>
+        </div>
+        <div class="button data-button">
+            <input id="label-confirm" type="button" value="确定"/>
+            <input class="report-cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--<div id="delete-data" class="unified-closed">-->
+        <!--<div class="data-top">删除</div>-->
+        <!--<div class="update-body">-->
+            <!--<div class="delete-body">确定要删除用户标签分类【<span></span>】吗？</div>-->
+        <!--</div>-->
+        <!--<div class="update-body bottom">-->
+            <!--<div class="button delete-button">-->
+                <!--<input id="label-confirm" type="button" value="确定"/>-->
+                <!--<input class="report-cancel" type="button" value="取消"/>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+    <input class="back" type="button" value="返回" style="width: 100px"/>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>用户标签管理
+                        <!--<small>分类，查找</small>-->
+                    </h5>
+                    <div class="ibox-tools">
+                        <input id="userId" type="hidden" th:value="${msUserId}">
+                        <input id="resourceId" type="hidden" th:value="${msResourceId}"/>
+                        <input id="parentId" type="hidden" th:value="${parentId}"/>
+                        <input id="userName" type="hidden" th:value="${name}">
+                        <input id="phone" type="hidden" th:value="${phone}">
+                        <input id="no" type="hidden" th:value="${no}">
+                        <input id="sex" type="hidden" th:value="${sex}">
+                        <input id="idVerifyStatus" type="hidden" th:value="${idVerifyStatus}">
+                        <input id="province" type="hidden" th:value="${province}">
+                        <input id="city" type="hidden" th:value="${city}">
+                        <input id="status" type="hidden" th:value="${status}">
+                        <input id="imageStatus" type="hidden" th:value="${imageStatus}">
+                        <input id="num" type="hidden" th:value="${num}">
+                    </div>
+                </div>
+                <div class="screen">
+                    <div >
+                        <h1>用户标签名</h1>
+                        <input id="name" type="text"/>
+                    </div>
+                    <div>
+                        <h1>用户标类别</h1>
+                        <select id="labelClassify">
+                            <option value="">--请选择--</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div id="bottom-left">
+                    </div>
+                    <div id="bottom-right">
+                    </div>
+                    <div class="bottom_manage">
+                    </div>
+                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox" id="checkAll"></th>
+                            <th>用户标签名</th>
+                            <th>用户标签分类</th>
+                            <th>排序</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="report">
+                        </tbody>
+                    </table>
+                    <!--<div class="content">-->
+                        <!--<ul>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                    <div class="page" id="page" style="text-align:center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="../../js/jquery.min.js?v=2.1.4"></script>
+<script src="../../js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<script src="../../js/plugins/jeditable/jquery.jeditable.js"></script>
+
+<!-- 自定义js -->
+<script src="../../js/content.js?v=1.0.0"></script>
+
+
+</body>
+
+</html>

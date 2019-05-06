@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.EngagementMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Engagement">
+        <id column="at_register_id" property="atRegisterId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="at_ctgy_id" property="atCtgyId"/>
+        <result column="name" property="name"/>
+        <result column="begin_time" property="beginTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="apply_begin_time" property="applyBeginTime"/>
+        <result column="apply_end_time" property="applyEndTime"/>
+        <result column="bg_image_url" property="bgImageUrl"/>
+        <result column="content" property="content"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="addr_detail" property="addrDetail"/>
+        <result column="single_fee" property="singleFee"/>
+        <result column="min_number" property="minNumber"/>
+        <result column="max_number" property="maxNumber"/>
+        <result column="at_invite_theme_id" property="atInviteThemeId"/>
+        <result column="limit_sex" property="limitSex"/>
+        <result column="check_status" property="checkStatus"/>
+        <result column="fee_status" property="feeStatus"/>
+        <association property="classifyName" column="at_ctgy_id" select="selectClassifyName"/>
+        <association property="userNum" column="at_register_id" select="selectUserNum"/>
+        <association property="themeName" column="at_invite_theme_id" select="selectThemeName"/>
+        <association property="userPhone" column="at_register_id" select="selectUserPhone"/>
+        <association property="userName" column="at_register_id" select="selectUserName"/>
+    </resultMap>
+
+    <select id="selectUserName" resultType="java.lang.String">
+      SELECT real_name FROM t_at_invite_user WHERE at_register_id=#{at_register_id} AND user_type = 1
+    </select>
+    <select id="selectUserPhone" resultType="java.lang.String">
+      SELECT phone_number FROM t_at_invite_user WHERE at_register_id=#{at_register_id} AND user_type = 1
+    </select>
+    <select id="selectThemeName" resultType="java.lang.String">
+      SELECT `name` FROM t_at_invite_theme WHERE at_invite_theme_id=#{at_invite_theme_id}
+    </select>
+    <select id="selectUserNum" resultType="java.lang.Integer">
+      SELECT COUNT(at_invite_user_id) FROM t_at_invite_user WHERE at_register_id=#{at_register_id}
+    </select>
+    <select id="selectClassifyName" resultType="java.lang.String">
+      SELECT `name` FROM t_at_ctgy WHERE at_ctgy_id=#{at_ctgy_id}
+    </select>
+
+    <select id="findById" resultMap="commentResultMap">
+        SELECT * FROM t_at_register WHERE at_register_id = #{registerId}
+    </select>
+
+    <select id="conditionQueryEngagement" resultMap="commentResultMap">
+        SELECT * FROM t_at_register ar
+        <where>
+            ar.at_ctgy_id IN (SELECT ac.at_ctgy_id FROM t_at_ctgy ac WHERE `key` = 'ACTIVITY_TYPE_INVITE' OR `key` = 'ACTIVITY_TYPE_SINGLE_INVITE')
+            <if test="null != engagement.name">
+                AND ar.name LIKE CONCAT('%',#{engagement.name},'%')
+            </if>
+            <if test="null != engagement.atCtgyId">
+                AND ar.at_ctgy_id LIKE CONCAT('%',#{engagement.atCtgyId},'%')
+            </if>
+            <if test="null != engagement.atInviteThemeId">
+                AND ar.at_invite_theme_id LIKE CONCAT('%',#{engagement.atInviteThemeId},'%')
+            </if>
+            <if test="null != engagement.checkStatus">
+                AND ar.check_status LIKE CONCAT('%',#{engagement.checkStatus},'%')
+            </if>
+            <if test="null != engagement.beginTime">
+                AND ar.begin_time = #{engagement.beginTime}
+            </if>
+            <if test="null != engagement.userPhone || null != engagement.userName">
+                AND ar.at_register_id IN (SELECT inv.at_register_id FROM t_at_invite_user inv
+                <where>
+                    <if test="null != engagement.userPhone">
+                        inv.phone_number LIKE CONCAT('%',#{engagement.userPhone},'%')
+                    </if>
+                    <if test="null != engagement.userName">
+                        AND inv.real_name LIKE CONCAT('%',#{engagement.userName},'%')
+                    </if>
+                </where>
+                )
+            </if>
+        </where>
+        ORDER BY ar.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(ar.at_register_id) FROM t_at_register ar
+        <where>
+            ar.at_ctgy_id IN (SELECT ac.at_ctgy_id FROM t_at_ctgy ac WHERE `key` = 'ACTIVITY_TYPE_INVITE' OR `key` = 'ACTIVITY_TYPE_SINGLE_INVITE')
+            <if test="null != name">
+                AND ar.name LIKE CONCAT('%',#{name},'%')
+            </if>
+            <if test="null != atCtgyId">
+                AND ar.at_ctgy_id LIKE CONCAT('%',#{atCtgyId},'%')
+            </if>
+            <if test="null != atInviteThemeId">
+                AND ar.at_invite_theme_id LIKE CONCAT('%',#{atInviteThemeId},'%')
+            </if>
+            <if test="null != checkStatus">
+                AND ar.check_status LIKE CONCAT('%',#{checkStatus},'%')
+            </if>
+            <if test="null != beginTime">
+                AND ar.begin_time = #{beginTime}
+            </if>
+            <if test="null != userPhone || null != userName">
+                AND ar.at_register_id IN (SELECT inv.at_register_id FROM t_at_invite_user inv
+                <where>
+                    <if test="null != userPhone">
+                        inv.phone_number LIKE CONCAT('%',#{userPhone},'%')
+                    </if>
+                    <if test="null != userName">
+                        AND inv.real_name LIKE CONCAT('%',#{userName},'%')
+                    </if>
+                </where>
+                )
+            </if>
+        </where>
+    </select>
+
+</mapper>

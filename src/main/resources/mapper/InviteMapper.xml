@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.InviteMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Invite">
+        <id column="at_invite_user_id" property="atInviteUserId"/>
+        <result column="at_register_id" property="atRegisterId"/>
+        <result column="ac_user_id" property="acUserId"/>
+        <result column="phone_number" property="phoneNumber"/>
+        <result column="user_type" property="userType"/>
+        <result column="real_name" property="realName"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="conditionQueryInvite" resultMap="commentResultMap">
+        SELECT * FROM t_at_invite_user
+        <where>
+            at_register_id = #{invite.atRegisterId}
+            <if test="null != invite.realName">
+                AND real_name LIKE CONCAT('%', #{invite.realName}, '%')
+            </if>
+            <if test="null != invite.phoneNumber">
+                AND phone_number LIKE CONCAT('%', #{invite.phoneNumber}, '%')
+            </if>
+        </where>
+        ORDER BY create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(at_invite_user_id) FROM t_at_invite_user
+        <where>
+            at_register_id = #{atRegisterId}
+            <if test="null != realName" >
+                AND real_name LIKE CONCAT('%', #{realName})
+            </if>
+            <if test="null != phoneNumber">
+                AND phone_number LIKE CONCAT('%', #{phoneNumber}, '%')
+            </if>
+        </where>
+    </select>
+
+</mapper>

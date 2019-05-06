@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.AttentionMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Attention">
+        <id column="ac_attention_rel_id" property="acAttentionRelId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="src_user_id" property="srcUserId"/>
+        <result column="obj_user_id" property="objUserId"/>
+        <association property="srcUser" column="src_user_id" select="selectSrcUser"/>
+        <association property="objUser" column="obj_user_id" select="selectObjUser"/>
+    </resultMap>
+
+    <select id="selectSrcUser" resultMap="acUserResultMap">
+        SELECT * FROM t_ac_user WHERE ac_user_id=#{src_user_id}
+    </select>
+    <select id="selectObjUser" resultMap="acUserResultMap">
+        SELECT * FROM t_ac_user WHERE ac_user_id=#{obj_user_id}
+    </select>
+
+    <resultMap id="acUserResultMap" type="com.ynw.system.entity.AcUser">
+        <id column="ac_user_id" property="acUserId"/>
+        <result column="head_image_url" property="headImageUrl"/>
+        <result column="phone_number" property="phoneNumber"/>
+        <result column="nickname" property="nickname"/>
+        <result column="sex" property="sex"/>
+        <result column="bd_city_id" property="bdCityId"/>
+        <association property="bdCityName" column="bd_city_id" select="selectBdCityName"/>
+    </resultMap>
+
+
+    <select id="selectBdCityName" resultType="java.lang.String">
+      SELECT bc.name FROM t_bd_city bc WHERE bc.bd_city_id=#{bd_city_id}
+    </select>
+
+
+
+    <select id="conditionQueryAttention" resultMap="commentResultMap">
+        SELECT * FROM t_ac_attention_rel fa
+        <where>
+            fa.status='URS_ADD_ATTENTION'
+            <if test="null != acUser.phoneNumber">
+                AND (fa.src_user_id IN (SELECT ac_user_id FROM t_ac_user ac WHERE ac.phone_number LIKE CONCAT('%',#{acUser.phoneNumber},'%')) OR
+                fa.obj_user_id IN (SELECT ac_user_id FROM t_ac_user ac WHERE ac.phone_number LIKE CONCAT('%',#{acUser.phoneNumber},'%')))
+            </if>
+            <if test="null != acUser.sex">
+                AND (fa.src_user_id IN (SELECT ac_user_id FROM t_ac_user ac WHERE ac.sex LIKE CONCAT('%',#{acUser.sex},'%')) OR
+                fa.obj_user_id IN (SELECT ac_user_id FROM t_ac_user ac WHERE ac.sex LIKE CONCAT('%',#{acUser.sex},'%')))
+            </if>
+            <if test="null != acUser.bdCityId || null != provinceId">
+                AND (fa.src_user_id IN (SELECT ac.ac_user_id FROM t_ac_user ac WHERE ac.bd_city_id IN (SELECT bc.bd_city_id FROM t_bd_city bc
+                <where>
+                    <if test="null != acUser.bdCityId">
+                        bc.bd_city_id LIKE CONCAT('%',#{acUser.bdCityId},'%')
+                    </if>
+                    <if test="null != provinceId">
+                        AND bc.bd_province_id LIKE CONCAT('%',#{provinceId},'%')
+                    </if>
+                </where>)) OR
+                fa.obj_user_id IN (SELECT ac.ac_user_id FROM t_ac_user ac WHERE ac.bd_city_id IN (SELECT bc.bd_city_id FROM t_bd_city bc
+                <where>
+                    <if test="null != acUser.bdCityId">
+                        bc.bd_city_id LIKE CONCAT('%',#{acUser.bdCityId},'%')
+                    </if>
+                    <if test="null != provinceId">
+                        AND bc.bd_province_id LIKE CONCAT('%',#{provinceId},'%')
+                    </if>
+                </where>)))
+            </if>
+        </where>
+        ORDER BY fa.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+
+    <select id="count" resultType="int">
+        SELECT COUNT(fa.ac_attention_rel_id) FROM t_ac_attention_rel fa
+        <where>
+            fa.status='URS_ADD_ATTENTION'
+            <if test="null != acUser.phoneNumber">
+                AND (fa.src_user_id IN (SELECT ac_user_id FROM t_ac_user ac WHERE ac.phone_number LIKE CONCAT('%',#{acUser.phoneNumber},'%')) OR
+                fa.obj_user_id IN (SELECT ac_user_id FROM t_ac_user ac WHERE ac.phone_number LIKE CONCAT('%',#{acUser.phoneNumber},'%')))
+            </if>
+            <if test="null != acUser.sex">
+                AND (fa.src_user_id IN (SELECT ac_user_id FROM t_ac_user ac WHERE ac.sex LIKE CONCAT('%',#{acUser.sex},'%')) OR
+                fa.obj_user_id IN (SELECT ac_user_id FROM t_ac_user ac WHERE ac.sex LIKE CONCAT('%',#{acUser.sex},'%')))
+            </if>
+            <if test="null != acUser.bdCityId || null != provinceId">
+                AND (fa.src_user_id IN (SELECT ac.ac_user_id FROM t_ac_user ac WHERE ac.bd_city_id IN (SELECT bc.bd_city_id FROM t_bd_city bc
+                <where>
+                    <if test="null != acUser.bdCityId">
+                        bc.bd_city_id LIKE CONCAT('%',#{acUser.bdCityId},'%')
+                    </if>
+                    <if test="null != provinceId">
+                        AND bc.bd_province_id LIKE CONCAT('%',#{provinceId},'%')
+                    </if>
+                </where>)) OR
+                fa.obj_user_id IN (SELECT ac.ac_user_id FROM t_ac_user ac WHERE ac.bd_city_id IN (SELECT bc.bd_city_id FROM t_bd_city bc
+                <where>
+                    <if test="null != acUser.bdCityId">
+                        bc.bd_city_id LIKE CONCAT('%',#{acUser.bdCityId},'%')
+                    </if>
+                    <if test="null != provinceId">
+                        AND bc.bd_province_id LIKE CONCAT('%',#{provinceId},'%')
+                    </if>
+                </where>)))
+            </if>
+        </where>
+    </select>
+    <select id="nowCount" resultType="java.lang.Integer">
+        SELECT COUNT(ac_attention_rel_id) FROM t_ac_attention_rel WHERE create_time LIKE CONCAT('%',#{nowTime},'%') AND status='URS_ADD_ATTENTION'
+    </select>
+
+</mapper>

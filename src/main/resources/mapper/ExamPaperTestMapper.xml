@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.ExamPaperTextMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.ExamPaperTest">
+        <id column="kb_exampaper_test_id" property="kbExampaperTestId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="ac_user_id" property="acUserId"/>
+        <result column="kb_exampaper_id" property="kbExampaperId"/>
+        <result column="kb_exampaper_answer_id" property="kbExampaperAnswerId"/>
+        <result column="sum_score" property="sumScore"/>
+    </resultMap>
+    <resultMap id="portionResultMap" type="com.ynw.system.entity.ExamPaperTest" extends="commentResultMap">
+        <association property="examTitle" column="kb_exampaper_id" select="selectExamTitle"/>
+        <association property="answer" column="kb_exampaper_answer_id" select="selectAnswer"/>
+    </resultMap>
+    <resultMap id="integrityResultMap" type="com.ynw.system.entity.ExamPaperTest" extends="portionResultMap">
+        <association property="userImage" column="ac_user_id" select="selectUserImage"/>
+        <association property="userName" column="ac_user_id" select="selectUserName"/>
+        <association property="userPhone" column="ac_user_id" select="selectUserPhone"/>
+    </resultMap>
+
+
+    <select id="selectUserImage" resultType="java.lang.String">
+      SELECT head_image_url FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserName" resultType="java.lang.String">
+      SELECT nickname FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserPhone" resultType="java.lang.String">
+      SELECT phone_number FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectExamTitle" resultType="java.lang.String">
+      SELECT title FROM t_kb_exampaper WHERE kb_exampaper_id=#{kb_exampaper_id}
+    </select>
+    <select id="selectAnswer" resultType="java.lang.String">
+      SELECT content FROM t_kb_exampaper_answer WHERE kb_exampaper_answer_id=#{kb_exampaper_answer_id}
+    </select>
+
+
+    <select id="conditionQueryExamPaperTest" resultMap="integrityResultMap">
+        SELECT * FROM t_kb_exampaper_test test
+        <where>
+            <if test="null != examPaperTest.userPhone">
+                test.ac_user_id IN (SELECT us.ac_user_id FROM t_ac_user us WHERE us.phone_number LIKE CONCAT('%',#{examPaperTest.userPhone},'%'))
+            </if>
+            <if test="null != examPaperTest.examTitle">
+                AND test.kb_exampaper_id IN (SELECT exam.kb_exampaper_id FROM t_kb_exampaper exam where exam.title LIKE CONCAT('%',#{examPaperTest.examTitle},'%'))
+            </if>
+        </where>
+        ORDER BY test.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(test.kb_exampaper_test_id) FROM t_kb_exampaper_test test
+        <where>
+            <if test="null != userPhone">
+                test.ac_user_id IN (SELECT us.ac_user_id FROM t_ac_user us WHERE us.phone_number LIKE CONCAT('%',#{userPhone},'%'))
+            </if>
+            <if test="null != examTitle">
+                AND test.kb_exampaper_id IN (SELECT exam.kb_exampaper_id FROM t_kb_exampaper exam where exam.title LIKE CONCAT('%',#{examTitle},'%'))
+            </if>
+        </where>
+    </select>
+    <select id="findByUserId" resultMap="portionResultMap">
+        SELECT * FROM t_kb_exampaper_test WHERE ac_user_id=#{acUserId}
+    </select>
+    <select id="nowCount" resultType="java.lang.Integer">
+        SELECT COUNT(kb_exampaper_test_id) FROM t_kb_exampaper_test WHERE create_time LIKE CONCAT('%',#{nowTime},'%')
+    </select>
+    <select id="nowCountByUserId" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT ac_user_id) FROM t_kb_exampaper_test WHERE create_time LIKE CONCAT('%',#{nowTime},'%')
+    </select>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.ParaConfMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.ParaConf">
+        <id column="sy_para_conf_id" property="syParaConfId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="describe" property="describe"/>
+        <result column="key" property="key"/>
+        <result column="value" property="value"/>
+    </resultMap>
+    <select id="conditionQueryParaConf" resultMap="commentResultMap">
+        SELECT * FROM t_sy_para_conf pc
+        <where>
+            <if test="null != paraConf.key">
+                pc.key LIKE CONCAT('%',#{paraConf.key},'%')
+            </if>
+            <if test="null != paraConf.value">
+                AND pc.value LIKE CONCAT('%',#{paraConf.value},'%')
+            </if>
+        </where>
+        ORDER BY pc.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(pc.sy_para_conf_id) FROM t_sy_para_conf pc
+        <where>
+            <if test="null != key">
+                pc.key LIKE CONCAT('%',#{key},'%')
+            </if>
+            <if test="null != value">
+                AND pc.value LIKE CONCAT('%',#{value},'%')
+            </if>
+        </where>
+    </select>
+    <!--<insert id="definedInsert">-->
+        <!--INSERT INTO t_sy_para_conf VALUES(#{syParaConfId},#{desc},#{key},#{value},#{createTime})-->
+    <!--</insert>-->
+    <!--<update id="definedUpdate">-->
+        <!--UPDATE t_sy_para_conf pc SET pc.desc=#{desc}, pc.key=#{key},pc.value=#{value} WHERE pc.sy_para_conf_id=#{syParaConfId}-->
+    <!--</update>-->
+    <select id="findByKey" resultMap="commentResultMap">
+        SELECT * FROM t_sy_para_conf pc WHERE pc.key=#{key}
+    </select>
+</mapper>

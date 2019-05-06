@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title> - 数据表格</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="../../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+
+    <link href="../../css/animate.css" rel="stylesheet">
+    <link href="../../css/style.css?v=4.1.0" rel="stylesheet">
+
+    <script type="text/javascript" src="../../../js/jquery.js"></script>
+    <script type="text/javascript" src="love.js"></script>
+    <script type="text/javascript" src="../../js/getDate.js"></script>
+    <link rel="stylesheet" href="../../../css/page/easyhelper.min.css">
+    <!--<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"></script>-->
+    <script src="../../js/jquery-3.3.1.min.js"></script>
+    <script src="../../../js/page/jquery.transit.min.js"></script>
+    <script src="../../../js/page/es6-shim.min.js"></script>
+    <script src="../../../js/page/easyhelper.min.js"></script>
+    <script src="../../../js/page/comment.js"></script>
+    <script type="text/javascript" src="../../../js/layer-v3.0.3/layer/layer.js"></script>
+    <link rel="stylesheet" href="../../../css/comment.css">
+    <style>
+        #add-role select {
+            width: 200px;
+            height: 90%;
+        }
+        .delete-button input {
+            margin-left: 10%;
+        }
+        .data-button input {
+            margin-left: 10%;
+        }
+        .view_body {
+            width: 100%;
+            height: 110px;
+        }
+        .view_comment {
+            width: 260px;
+            height: 100%;
+            float: left;
+            margin-left: 40px;
+            border: 1px solid black;
+        }
+        .data-top {
+            height: 29%;
+            text-align: center;
+            line-height: 30px;
+            border: none;
+        }
+        .data-comment {
+            width: 100%;
+            height: 71%;
+            background: lightgoldenrodyellow;
+            text-align: center;
+            font-size: 30px;
+            color: orangered;
+            line-height: 70px;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>情豆流水列表
+                        <!--<small>分类，查找</small>-->
+                    </h5>
+                    <div class="ibox-tools">
+                        <input id="userId" type="hidden" th:value="${msUserId}">
+                        <input id="resourceId" type="hidden" th:value="${msResourceId}"/>
+                    </div>
+                </div>
+                <div class="screen">
+                    <div>
+                        <h1>手机号</h1>
+                        <input id="phone" oninput = "value=value.replace(/[^\d]/g,'')" maxlength="11" type="text"/>
+                    </div>
+                    <div>
+                        <h1>出入账类型</h1>
+                        <select id="type">
+                            <option value="">--请选择--</option>
+                            <option value="1">+</option>
+                            <option value="0">-</option>
+                        </select>
+                    </div>
+                    <div>
+                        <h1>相关业务</h1>
+                        <select id="assoBusinessKey">
+                            <option value="">--请选择--</option>
+                        </select>
+                    </div>
+                    <div>
+                        <h1>起始时间</h1>
+                        <input id="beginDate" type="date" style="height: 30px;border-radius: 5px;"/>
+                    </div>
+                    <div>
+                        <h1>结束时间</h1>
+                        <input id="endDate" type="date" style="height: 30px;border-radius: 5px;"/>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="view_body">
+                        <div class="view_comment">
+                            <div class="data-top">合计</div>
+                            <div class="data-comment total"></div>
+                        </div>
+                        <div class="view_comment">
+                            <div class="data-top">收入（+）</div>
+                            <div class="data-comment income"></div>
+                        </div>
+                        <div class="view_comment">
+                            <div class="data-top">支出（-）</div>
+                            <div class="data-comment expend"></div>
+                        </div>
+                    </div>
+                    <div id="bottom-left">
+                        <!--<input id="add" type="button" value="新增">-->
+                        <!--<input type="button" value="编辑">-->
+                        <!--<input type="button" value="管理">-->
+                    </div>
+                    <!--<div class="manage_date">-->
+                        <!--&lt;!&ndash;<input type="button" value="管理">&ndash;&gt;-->
+                    <!--</div>-->
+                    <div id="bottom-right">
+                        <!--<input type="button" value="筛选">-->
+                        <!--<input type="button" value="刷新">-->
+                    </div>
+                    <div class="bottom_manage">
+                        <!--<input type="button" value="重置密码"/>-->
+                        <!--<br/>-->
+                        <!--<input type="button" value="关联角色"/>-->
+                    </div>
+                    <!--<div class="button-left">新增</div>-->
+                    <!--<div class="button-left">编辑</div>-->
+                    <!--<div class="button-left">筛选</div>-->
+                    <!--<div id="screen" class="button-right">筛选</div>-->
+                    <!--<div class="button-right">刷新</div>-->
+                    <!--<div class="button-right">管理</div>-->
+                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                        <thead>
+                        <tr>
+                            <th>用户头像</th>
+                            <th>手机号码</th>
+                            <th>用户昵称</th>
+                            <th>出入账类型</th>
+                            <th>数量</th>
+                            <th>相关业务</th>
+                            <th>创建时间</th>
+                        </tr>
+                        </thead>
+                        <tbody id="admin">
+                        </tbody>
+                    </table>
+                    <!--<div class="content">-->
+                        <!--<ul>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                    <div class="page" id="page" style="text-align:center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="../../js/jquery.min.js?v=2.1.4"></script>
+<script src="../../js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<script src="../../js/plugins/jeditable/jquery.jeditable.js"></script>
+
+<!-- 自定义js -->
+<script src="../../js/content.js?v=1.0.0"></script>
+
+
+</body>
+
+</html>

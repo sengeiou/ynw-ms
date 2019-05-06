@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.SweetsSumMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.SweetsSum">
+        <id column="ac_sugar_sum_id" property="acSugarSumId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="ac_user_id" property="acUserId"/>
+        <result column="sum" property="sum"/>
+        <result column="gold_conversion" property="goldConversion"/>
+        <result column="update_time" property="updateTime"/>
+        <association property="userName" column="ac_user_id" select="selectUserName"/>
+        <association property="userPhone" column="ac_user_id" select="selectUserPhone"/>
+        <association property="userImg" column="ac_user_id" select="selectUserImg"/>
+    </resultMap>
+
+    <select id="selectUserImg" resultType="java.lang.String">
+      SELECT head_image_url FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserPhone" resultType="java.lang.String">
+      SELECT phone_number FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserName" resultType="java.lang.String">
+      SELECT nickname FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+
+    <update id="updateSum">
+        UPDATE t_ac_sugar_sum SET `sum` = #{sum} WHERE ac_user_id = #{acUserId}
+    </update>
+    <update id="updateSumAndMoney">
+        UPDATE t_ac_sugar_sum SET gold_conversion = #{goldConversion} WHERE ac_user_id = #{acUserId}
+    </update>
+    <select id="conditionQuerySweetsSum" resultMap="commentResultMap">
+        SELECT * FROM t_ac_sugar_sum sf
+        <where>
+            <if test="null != sweetsSum.userName || null != sweetsSum.userPhone">
+                sf.ac_user_id IN (SELECT au.ac_user_id FROM t_ac_user au
+                <where>
+                    <if test="null != sweetsSum.userPhone">
+                        au.phone_number LIKE CONCAT('%',#{sweetsSum.userPhone},'%')
+                    </if>
+                    <if test="null != sweetsSum.userName">
+                        AND au.nickname LIKE CONCAT('%',#{sweetsSum.userName},'%')
+                    </if>
+                </where>
+                )
+            </if>
+        </where>
+        ORDER BY sf.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(sf.ac_sugar_sum_id) FROM t_ac_sugar_sum sf
+        <where>
+            <if test="null != userName || null != userPhone">
+                sf.ac_user_id IN (SELECT au.ac_user_id FROM t_ac_user au
+                <where>
+                    <if test="null != userPhone">
+                        au.phone_number LIKE CONCAT('%',#{userPhone},'%')
+                    </if>
+                    <if test="null != userName">
+                        AND au.nickname LIKE CONCAT('%',#{userName},'%')
+                    </if>
+                </where>
+                )
+            </if>
+        </where>
+    </select>
+
+    <!--<insert id="insertByBatch">-->
+        <!--INSERT INTO t_ac_cp_flow (ac_cp_flow_id,ac_cp_rel_id,req_user_id,res_user_id,src_type,src_id,`status`,create_time) VALUES-->
+        <!--<foreach collection="list" item="item" index="index" separator=",">-->
+            <!--(#{item.acCpFlowId},#{item.acCpRelId},#{item.reqUserId},#{item.resUserId},#{item.srcType},#{item.srcId},#{item.status},#{item.createTime})-->
+        <!--</foreach>-->
+    <!--</insert>-->
+</mapper>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.AdviceMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Advice">
+        <id column="sy_advice_id" property="syAdviceId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="ac_user_id" property="acUserId"/>
+        <result column="type" property="type"/>
+        <result column="content" property="content"/>
+    </resultMap>
+
+    <resultMap id="adviceResultMap" type="com.ynw.system.entity.Advice" extends="commentResultMap">
+        <association property="userName" column="ac_user_id" select="selectUserName"/>
+        <association property="businessId" column="sy_advice_id" select="selectBusinessId"/>
+    </resultMap>
+
+    <select id="selectUserName" resultType="java.lang.String">
+        SELECT nickname FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+
+    <select id="selectBusinessId" resultType="java.lang.String">
+        SELECT mg_business_id FROM t_mg_business WHERE (asso_info_1=#{sy_advice_id} OR asso_info_2=#{sy_advice_id})
+        AND busi_type='PMBT_ADVICE' LIMIT 0,1
+    </select>
+
+    <select id="conditionQueryAdvice" resultMap="adviceResultMap">
+        SELECT * FROM t_sy_advice sa
+        <where>
+            <if test="null != advice.userName">
+                sa.ac_user_id IN (SELECT ua.ac_user_id FROM t_ac_user ua WHERE ua.nickname LIKE CONCAT('%',#{advice.userName},'%'))
+            </if>
+            <if test="reply == 1">
+                AND (sa.sy_advice_id NOT IN (SELECT bm.asso_info_1 FROM t_mg_business bm WHERE bm.busi_type='PMBT_ADVICE')
+                OR sa.sy_advice_id NOT IN (SELECT bmt.asso_info_2 FROM t_mg_business bmt WHERE bmt.busi_type='PMBT_ADVICE'))
+            </if>
+            <if test="reply == 0">
+                AND (sa.sy_advice_id IN (SELECT bm.asso_info_1 FROM t_mg_business bm WHERE bm.busi_type='PMBT_ADVICE')
+                OR sa.sy_advice_id IN (SELECT bmt.asso_info_2 FROM t_mg_business bmt WHERE bmt.busi_type='PMBT_ADVICE'))
+            </if>
+            <if test="null != advice.type">
+                AND sa.type LIKE CONCAT('%',#{advice.type},'%')
+            </if>
+        </where>
+        ORDER BY sa.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(sa.sy_advice_id) FROM t_sy_advice sa
+        <where>
+            <if test="null != advice.userName">
+                sa.ac_user_id IN (SELECT ua.ac_user_id FROM t_ac_user ua WHERE ua.nickname LIKE CONCAT('%',#{advice.userName},'%'))
+            </if>
+            <if test="reply == 1">
+                AND (sa.sy_advice_id NOT IN (SELECT bm.asso_info_1 FROM t_mg_business bm WHERE bm.busi_type='PMBT_ADVICE')
+                OR sa.sy_advice_id NOT IN (SELECT bmt.asso_info_2 FROM t_mg_business bmt WHERE bmt.busi_type='PMBT_ADVICE'))
+            </if>
+            <if test="reply == 0">
+                AND (sa.sy_advice_id IN (SELECT bm.asso_info_1 FROM t_mg_business bm WHERE bm.busi_type='PMBT_ADVICE')
+                OR sa.sy_advice_id IN (SELECT bmt.asso_info_2 FROM t_mg_business bmt WHERE bmt.busi_type='PMBT_ADVICE'))
+            </if>
+            <if test="null != advice.type">
+                AND sa.type LIKE CONCAT('%',#{advice.type},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

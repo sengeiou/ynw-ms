@@ -1,0 +1,20 @@
+FilePath: /mnt/res/share/appres
+server:
+  port: 8082
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://rm-bp1s8v22f4853g670.mysql.rds.aliyuncs.com/ynw_cloud_db?serverTimezone=GMT%2B8
+    username: ynw_dev
+    password: Ynw_dev_2018
+  redis:
+    host: 172.16.247.146
+    port: 6379
+    password:
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+    timeout: 3600

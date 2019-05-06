@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.PhraseMapper">
+    <resultMap id="generalDutyResultMap" type="com.ynw.system.entity.Phrase">
+        <id column="rs_phrase_id" property="rsPhraseId"/>
+        <result column="content" property="content"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="conditionQueryPhrase" resultMap="generalDutyResultMap">
+        SELECT * FROM t_rs_phrase ORDER BY create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+</mapper>

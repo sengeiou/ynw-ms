@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.APPEditionMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.APPEdition">
+        <id column="ms_app_v_update_id" property="msAppVUpdateId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="content" property="content"/>
+        <result column="package_url" property="packageUrl"/>
+        <result column="is_force_update" property="isForceUpdate"/>
+        <result column="describe" property="describe"/>
+        <result column="visitor_os_type" property="visitorOsType"/>
+        <result column="size" property="size"/>
+        <result column="number" property="number"/>
+        <association property="visitorOsTypeName" column="visitor_os_type" select="selectVisitorOsTypeName"/>
+    </resultMap>
+    <select id="selectVisitorOsTypeName" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{visitor_os_type}
+    </select>
+    <select id="conditionQueryAPPEdition" resultMap="commentResultMap">
+        SELECT * FROM t_ms_app_v_update
+        <where>
+            <if test="null != appEdition.number">
+                number LIKE CONCAT('%',#{appEdition.number},'%')
+            </if>
+            <if test="null != appEdition.visitorOsType">
+                AND visitor_os_type LIKE CONCAT('%',#{appEdition.visitorOsType},'%')
+            </if>
+        </where>
+        ORDER BY create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(ms_app_v_update_id) FROM t_ms_app_v_update
+        <where>
+            <if test="null != number">
+                number LIKE CONCAT('%',#{number},'%')
+            </if>
+            <if test="null != visitorOsType">
+                AND visitor_os_type LIKE CONCAT('%',#{visitorOsType},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.SelfLabelMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.SelfLabel">
+        <id column="bd_selflabel_id" property="bdSelflabelId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+    </resultMap>
+
+    <select id="conditionQuerySelfLabel" resultMap="commentResultMap">
+        SELECT * FROM t_bd_selflabel
+        <where>
+            <if test="null != selfLabel.name">
+                name LIKE CONCAT('%',#{selfLabel.name},'%')
+            </if>
+        </where>
+        ORDER BY sort ASC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(bd_selflabel_id) FROM t_bd_selflabel
+        <where>
+            <if test="null != name">
+                name LIKE CONCAT('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+    <select id="findBySortMax" resultMap="commentResultMap">
+        SELECT * FROM t_bd_selflabel ORDER BY sort DESC
+    </select>
+    <select id="findSelfLabelByAcUserId" resultMap="commentResultMap">
+        SELECT * FROM t_bd_selflabel bs WHERE bs.bd_selflabel_id IN (SELECT ur.bd_selflabel_id FROM t_ac_u_selflabel_rel ur WHERE
+        ur.ac_user_id=#{acUserId}) ORDER BY bs.sort ASC
+    </select>
+</mapper>

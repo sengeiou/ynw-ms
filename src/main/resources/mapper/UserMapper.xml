@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.UserMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.User">
+        <id column="ms_user_id" property="msUserId"/>
+        <result column="password" property="password"/>
+        <result column="name" property="name"/>
+        <result column="real_name" property="realName"/>
+        <result column="phone_number" property="phoneNumber"/>
+        <result column="register_ip" property="registerIp"/>
+        <result column="last_login_time" property="lastLoginTime"/>
+        <result column="last_login_ip" property="lastLoginIp"/>
+        <result column="login_num" property="loginNum"/>
+        <result column="status" property="status"/>
+        <result column="email" property="email"/>
+        <result column="sex" property="sex"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+    <resultMap id="UserRoleResultMap" type="com.ynw.system.entity.User" extends="commentResultMap">
+        <association property="roleList" column="ms_user_id" select="selectRoleByUserId"/>
+    </resultMap>
+    <resultMap id="RoleResultMap" type="com.ynw.system.entity.Role">
+        <id column="ms_role_id" property="msRoleId"/>
+        <result column="name" property="name"/>
+    </resultMap>
+    <select id="selectRoleByUserId" resultMap="RoleResultMap">
+        SELECT mr.ms_role_id,mr.name  FROM t_ms_role mr JOIN t_ms_user_role mur ON mr.ms_role_id=mur.ms_role_id WHERE mur.ms_user_id=#{ms_user_id}
+    </select>
+    <sql id="commentSQL">
+        mu.ms_user_id, mu.password, mu.name, mu.real_name, mu.phone_number, mu.register_ip, mu.last_login_time, mu.last_login_ip, mu.login_num, mu.status,
+         mu.email, mu.sex,mu.create_time
+    </sql>
+    <select id="conditionQueryUserAll" resultMap="UserRoleResultMap">
+        SELECT <include refid="commentSQL"/> FROM t_ms_user mu
+        <where>
+            <if test="null != user.name">
+                mu.name LIKE CONCAT('%',#{user.name},'%')
+            </if>
+            <if test="null != user.phoneNumber">
+                AND mu.phone_number LIKE CONCAT('%',#{user.phoneNumber},'%')
+            </if>
+            <if test="null != user.status">
+                AND mu.status LIKE CONCAT('%',#{user.status},'%')
+            </if>
+            <if test="null != user.roleId">
+                AND mu.ms_user_id IN (SELECT mur.ms_user_id FROM t_ms_user_role mur WHERE mur.ms_role_id=#{user.roleId})
+            </if>
+            <if test="null != user.msUserId">
+                AND mu.ms_user_id != 'c73a9f42b17a4ce20181227170135651'
+            </if>
+        </where>
+        ORDER BY mu.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <!-- 统计符合条件的数据 -->
+    <select id="count" resultType="int">
+        SELECT COUNT(mu.ms_user_id) FROM t_ms_user mu
+        <where>
+            <if test="null != name">
+                mu.name LIKE CONCAT('%',#{name},'%')
+            </if>
+            <if test="null != phoneNumber">
+                AND mu.phone_number LIKE CONCAT('%',#{phoneNumber},'%')
+            </if>
+            <if test="null != status">
+                AND mu.status LIKE CONCAT('%',#{status},'%')
+            </if>
+            <if test="null != roleId">
+                AND mu.ms_user_id IN (SELECT mur.ms_user_id FROM t_ms_user_role mur WHERE mur.ms_role_id=#{roleId})
+            </if>
+            <if test="null != msUserId">
+                AND mu.ms_user_id != 'c73a9f42b17a4ce20181227170135651'
+            </if>
+        </where>
+    </select>
+    <select id="findUserByRoleId" resultMap="commentResultMap">
+        SELECT <include refid="commentSQL" /> FROM t_ms_user mu WHERE mu.ms_user_id IN (SELECT mur.ms_user_id
+        FROM t_ms_user_role mur WHERE mur.ms_role_id=#{roleId})
+    </select>
+    <select id="findAll" resultMap="commentResultMap">
+        SELECT * FROM t_ms_user WHERE ms_user_id != 'c73a9f42b17a4ce20181227170135651'
+    </select>
+    <insert id="insertUser">
+        INSERT INTO t_ms_user (ms_user_id,password,`name`,real_name,phone_number,register_ip,last_login_time,last_login_ip,login_num,
+        status,email,sex,create_time) VALUES (#{msUserId},#{password},#{name},#{realName},#{phoneNumber},#{registerIp},#{lastLoginTime},#{lastLoginIp},
+        #{loginNum},#{status},#{email},#{sex},#{createTime})
+    </insert>
+</mapper>

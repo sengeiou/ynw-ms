@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>测试网页</title>
+		<style>
+			div.test1{
+				width: 100%;
+				height: 200px;
+				color: #FF0000;
+				background-color: #0A6AA1;
+			}
+			textarea.test1{
+				width:100%;
+				height:200px;
+				color:#FF0000;
+				background-color: #0A6AA1;
+			}
+			input#button1{
+				width:100px;
+				height:50px;
+				align-self: center;
+			}
+		</style>
+		<script>
+			function rego(){
+//				window.location = "http://www.baidu.com";
+//				alert("测试");
+				setTimeout(function(){alert("等了1秒！")},1000);
+			};
+		</script>
+	</head>
+	<body>
+		
+		<div class="test1" contenteditable="true"></div>
+		<textarea class="test1"></textarea>
+		
+		<input id = "button1" type = "button" onclick="rego();" title="点击"> 
+		
+	</body>
+</html>

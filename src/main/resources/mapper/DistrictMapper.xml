@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.DistrictMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.District">
+        <id column="bd_district_id" property="bdDistrictId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+        <result column="bd_city_id" property="bdCityId"/>
+    </resultMap>
+
+    <select id="conditionQueryDistrict" resultMap="commentResultMap">
+        SELECT * FROM t_bd_district WHERE bd_city_id=#{bdCityId}
+        ORDER BY sort ASC
+    </select>
+    <select id="findBySortMax" resultMap="commentResultMap">
+        SELECT * FROM t_bd_district WHERE bd_city_id=#{bdCityId} ORDER BY sort DESC
+    </select>
+</mapper>

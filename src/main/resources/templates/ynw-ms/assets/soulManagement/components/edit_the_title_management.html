@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title> - 数据表格</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="../../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+
+    <link href="../../css/animate.css" rel="stylesheet">
+    <link href="../../css/style.css?v=4.1.0" rel="stylesheet">
+
+    <script type="text/javascript" src="../../../js/jquery.js"></script>
+    <script type="text/javascript" src="edit_the_title.js"></script>
+    <script type="text/javascript" src="../../js/getDate.js"></script>
+    <!--<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"></script>-->
+    <script src="../../js/jquery-3.3.1.min.js"></script>
+    <script src="../../../js/page/comment.js"></script>
+    <script type="text/javascript" src="../../../js/layer-v3.0.3/layer/layer.js"></script>
+    <link rel="stylesheet" href="../../../css/comment.css">
+    <style>
+        .subject {
+            width: 96%;
+            height: 560px;
+            /*height: 1060px;*/
+            margin: 2%;
+            border: 1px solid black;
+        }
+        .subject-body {
+            width: 30%;
+            height: 450px;
+            border: 1px solid black;
+            margin-top: 2%;
+            margin-left: 2.4%;
+            float: left;
+            overflow: hidden;
+        }
+        .subject-body-subjectivity {
+            width: 100%;
+            height: 30%;
+            border-bottom: 1px solid black;
+        }
+        .subject-body-subjectivity .body-left{
+            width: 85%;
+            height: 100%;
+            float: left;
+            word-wrap: break-word;
+            word-break: normal;
+            font-size: 14px;
+        }
+        .subject-body-subjectivity .body-right{
+            width: 10%;
+            height: 100%;
+            float: left;
+        }
+        .subject-item {
+            width: 105%;
+            height: 60%;
+            overflow: hidden;
+            overflow-y:scroll;
+        }
+        .subject-body-option {
+            width: 100%;
+            height: 24%;
+            border-bottom: 1px solid black;
+        }
+        .subject-body-option .body-left{
+            width: 78%;
+            height: 100%;
+            float: left;
+            word-wrap: break-word;
+            word-break: normal;
+            font-size: 14px;
+        }
+        .subject-body-option .body-right{
+            width: 20%;
+            height: 100%;
+            float: left;
+        }
+        .data-top img {
+            width: 20px;
+            height: 20px;
+            float: right;
+            margin-top: 10px;
+            margin-right: 20px;
+        }
+        .subject-body-subjectivity .body-right img {
+            width: 30px;
+            height: 30px;
+            margin-top: 80%;
+            margin-left: 40%
+        }
+        .subject-body-option .body-right img {
+            margin-top: 15%;
+            margin-left: 5%;
+        }
+        .answer {
+            width: 96%;
+            height: 400px;
+            /*height: 800px;*/
+            margin: 35px;
+            border: 1px solid black;
+        }
+        .answer-body {
+            width: 20%;
+            height: 300px;
+            border: 1px solid black;
+            margin-top: 35px;
+            margin-left: 4%;
+            float: left;
+        }
+        .answer-body-comment {
+            width: 91%;
+            height: 70%;
+            margin-top: 4%;
+            margin-left: 4%;
+        }
+        .answer-button {
+            width: 72%;
+            height: 15%;
+            margin-left: 15%;
+        }
+        .answer-button input {
+            width: 30%;
+            margin-left: 8%;
+        }
+        .answer-body-left {
+            width: 85%;
+            height: 85%;
+            float: left;
+        }
+        .answer-body-left span {
+            font-size: 0.8vw;
+        }
+        .answer-body-left input {
+            width: 60%;
+            height: 15%;
+            margin-bottom: 3%;
+        }
+        .answer-body-right {
+            width: 13%;
+            height: 85%;
+            float: left;
+        }
+        .answer-body-comment h1 {
+            font-size: 15px;
+            margin: 0px;
+        }
+        .answer-body-right img {
+            margin-top: 120%;
+        }
+        .add-subject-data {
+            width: 30%;
+            height: 400px;
+            border: 1px solid black;
+            margin-left: 30%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 101;
+            background: white;
+            display: none;
+        }
+        .add-subject-body {
+            margin-top: 3%;
+            margin-left: 10%;
+            width: 80%;
+            height: 60%;
+            border-bottom: 1px dashed gainsboro;
+        }
+        .add-subject-button {
+            width: 80%;
+            height: 8%;
+            margin-left: 10%;
+            margin-top: 6%;
+        }
+        .add-subject-button input {
+            width: 20%;
+            margin-left: 15%;
+        }
+        .add-subject-body select {
+            width: 50%;
+            height: 30px;
+            border-radius: 5px;
+            margin-top: 3%;
+            margin-left: 10%;
+        }
+        .add-subject-body textarea {
+            width: 50%;
+            margin-left: 11%;
+            margin-top: 4%;
+        }
+        .operation-subject-item {
+            width: 30%;
+            height: 430px;
+            border: 1px solid black;
+            margin-left: 30%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 101;
+            background: white;
+            display: none;
+        }
+        .dynamic-condition {
+            width: 70%;
+            height: 30%;
+            border: 1px solid black;
+            margin-left: 15%;
+            margin-top: 5%;
+            overflow: hidden;
+            overflow-y:scroll;
+        }
+        .update-subject-item-body {
+            width: 80%;
+            height: 30%;
+            margin-left: 10%;
+            margin-top: 3%;
+            font-size: 0.8vw;
+        }
+        .update-subject-item-body textarea {
+            width: 50%;
+            margin-left: 10%;
+        }
+        .update-subject-item-body select {
+            width: 50%;
+            height: 30px;
+            border-radius: 5px;
+            margin-top: 2%;
+            margin-left: 10%;
+        }
+        .delete-data {
+            width: 30%;
+            height: 350px;
+            border: 1px solid black;
+            margin-left: 30%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 101;
+            background: white;
+            display: none;
+        }
+        .delete-data-body {
+            width: 90%;
+            height: 60%;
+            margin-left: 5%;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .delete-data-body-comment {
+            width: 100%;
+            height: 80%;
+            color: orangered;
+            font-size: 18px;
+        }
+        .operation-subject-answer {
+            width: 500px;
+            height: 400px;
+            border: 1px solid black;
+            margin-left: 30%;
+            margin-top: 60px;
+            position: fixed;
+            z-index: 5;
+            background: white;
+            display: none;
+        }
+        .add-subject-answer-body {
+            width: 90%;
+            margin-left: 5%;
+            margin-top: 20px;
+            height: 120px;
+        }
+        .add-subject-answer-body textarea {
+            width: 80%;
+            margin-left: 8%;
+        }
+        .add-subject-answer-body input {
+            margin-top: 20px;
+            margin-left: 15%;
+        }
+        .delete-subject-answer-data {
+            width: 300px;
+            height: 200px;
+            border: 1px solid black;
+            margin-left: 40%;
+            margin-top: 60px;
+            position: fixed;
+            z-index: 5;
+            background: white;
+            display: none;
+        }
+        .delete-subject-answer {
+            width: 260px;
+            margin-left: 20px;
+            height: 50px;
+            margin-top: 30px;
+            text-align: center;
+            font-size: 18px;
+            color: red;
+        }
+        .delete-subject-answer-data input {
+            margin-left: 40px;
+        }
+        .score{
+            width: 80%;
+            height: 60px;
+            margin-left: 10%;
+            margin-top: 5%;
+        }
+        .score input {
+            width: 50%;
+            margin-left: 27%;
+        }
+        .answer textarea {
+            width: 80%;
+            word-break: break-all;
+        }
+        .data-top {
+            width: 100%;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+<!--新增选项-->
+<div class="operation-data operation-subject-item" id="add-subject-item-data">
+    <div class="data-top">新增选项</div>
+    <div class="update-subject-item-body">
+        选项内容：
+        <textarea rows="2"></textarea>
+        <br/>
+        是终结点：
+        <select name="isPathEnd">
+            <option value="0">否</option>
+            <option value="1">是</option>
+        </select><br/>
+        <span>下一题:</span>
+    </div>
+    <div class="score">
+        <input type="text" oninput = "value=value.replace(/[^\d]/g,'')">
+    </div>
+    <div class="dynamic-condition">
+    </div>
+    <div class="add-subject-button" style="margin-top: 20px;margin-left: 10%;">
+        <input id="add-subject-item-confirm" type="button" value="确定"/>
+        <input class="cancel" type="button" value="取消"/>
+    </div>
+</div>
+
+<!--编辑选项-->
+<div class="operation-data operation-subject-item" id="update-subject-item-data">
+    <div class="data-top">编辑选项</div>
+    <div class="update-subject-item-body">
+        选项内容：
+        <textarea rows="2"></textarea>
+        <br/>
+        是终结点：
+        <select id="isPathEnd" name="isPathEnd">
+            <option value="0">否</option>
+            <option value="1">是</option>
+        </select><br/>
+        <span>下一题:</span>
+    </div>
+    <div class="score">
+        <input type="text" oninput = "value=value.replace(/[^\d]/g,'')">
+    </div>
+    <div class="dynamic-condition">
+    </div>
+    <div class="add-subject-button" style="margin-top: 20px;margin-left: 10%;">
+        <input id="update-subject-item-confirm" type="button" value="确定"/>
+        <input class="cancel" type="button" value="取消"/>
+    </div>
+</div>
+
+<!--删除题目选项-->
+<div class="operation-data delete-data" id="delete-subject-item">
+    <div class="data-top">删除题目选项</div>
+    <div class="delete-data-body">
+        <div class="delete-data-body-comment">
+        </div>
+        <div>
+            确定要删除该题目选项吗？
+        </div>
+    </div>
+    <div class="add-subject-button" style="margin-top: 20px;margin-left: 10%;">
+        <input id="delete-subject-item-confirm" type="button" value="确定"/>
+        <input class="cancel" type="button" value="取消"/>
+    </div>
+</div>
+<!--新增题目-->
+<div class="add-subject-data operation-data" id="add-subject-data">
+    <div class="data-top">新增题目</div>
+    <div class="add-subject-body">
+        题目类型：
+        <select name="type"></select><br/>
+        路径类型：
+        <select name="pathType"></select><br/>
+        题目内容:<textarea rows="4"></textarea>
+    </div>
+    <div class="add-subject-button">
+        <input id="add-subject-button" type="button" value="确定"/>
+        <input class="cancel" type="button" value="取消"/>
+    </div>
+</div>
+
+<!--编辑题目-->
+<div class="add-subject-data operation-data" id="update-subject-data">
+    <div class="data-top">编辑题目</div>
+    <div class="add-subject-body">
+        题目类型：
+        <select name="type"></select><br/>
+        路径类型：
+        <select name="pathType"></select><br/>
+        题目内容:<textarea rows="4"></textarea>
+    </div>
+    <div class="add-subject-button">
+        <input id="update-subject-button" type="button" value="确定"/>
+        <input class="cancel" type="button" value="取消"/>
+    </div>
+</div>
+
+<!--删除题目-->
+<div class="operation-data delete-data" id="delete-subject">
+    <div class="data-top">删除题目</div>
+    <div class="delete-data-body">
+        <div class="delete-data-body-comment">
+        </div>
+        <div>
+            确定要删除该题目吗？
+        </div>
+    </div>
+    <div class="add-subject-button" style="margin-top: 20px;margin-left: 10%;">
+        <input id="delete-subject-confirm" type="button" value="确定"/>
+        <input class="cancel" type="button" value="取消"/>
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <input class="back" type="button" value="返回" style="width: 100px"/>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div id="user_body">
+                    <div id="user_body_left">
+                        <!--<div class="data-top"></div>-->
+                        <input id="kbExamPaperId" type="hidden" th:value="${kbExamPaperId}">
+                        <input id="URL" type="hidden" th:value="${URL}">
+                        <input id="msResourceId" type="hidden" th:value="${msResourceId}">
+                        <input id="route" type="hidden" th:value="${type}">
+                        <!--题目栏-->
+                        <div class="subject">
+                            <!--<div class="data-top">题目栏-->
+                                <!--<a id="add-subject" href="javascript:;">-->
+                                    <!--<img src="../../img/plus.png">-->
+                                <!--</a>-->
+                            <!--</div>-->
+                            <!--<div class="subject-body">-->
+
+                                <!--<div class="data-top">题目(<span></span>)-->
+                                    <!--<a href="javascript:;">-->
+                                        <!--<img src="../../img/plus.png">-->
+                                    <!--</a>-->
+                                    <!--<a href="javascript:;">-->
+                                        <!--<img src="../../img/trash.png">-->
+                                    <!--</a>-->
+                                <!--</div>-->
+                                <!--<div class="subject-body-subjectivity">-->
+                                    <!--<div class="body-left">-->
+                                        <!--你好asdfadsfasdfasdfsadfsadfsadfasdfsadfasdfasdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff-->
+                                    <!--</div>-->
+                                    <!--<div class="body-right">-->
+                                        <!--<a href="javascript:;">-->
+                                            <!--<img src="../../img/redact.png">-->
+                                        <!--</a>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="subject-item">-->
+                                    <!--<div class="subject-body-option">-->
+                                        <!--<div class="body-left">-->
+                                            <!--你好asdfadsfasdfasdfsadfsadfsadfasdfsadfasdfasdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff-->
+                                        <!--</div>-->
+                                        <!--<div class="body-right">-->
+                                            <!--<a href="javascript:;">-->
+                                                <!--<img src="../../img/redact.png" style="width: 30px;height: 30px;">-->
+                                            <!--</a>-->
+                                            <!--<a href="javascript:;">-->
+                                                <!--<img src="../../img/trash.png" style="width: 20px;height: 20px;">-->
+                                            <!--</a>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="subject-body-option">-->
+                                        <!--<div class="body-left">-->
+                                            <!--你好asdfadsfasdfasdfsadfsadfsadfasdfsadfasdfasdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff-->
+                                        <!--</div>-->
+                                        <!--<div class="body-right">-->
+                                            <!--<a href="javascript:;">-->
+                                                <!--<img src="../../img/redact.png" style="width: 30px;height: 30px;">-->
+                                            <!--</a>-->
+                                            <!--<a href="javascript:;">-->
+                                                <!--<img src="../../img/trash.png" style="width: 20px;height: 20px;">-->
+                                            <!--</a>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="subject-body-option">-->
+                                        <!--<div class="body-left">-->
+                                            <!--你好asdfadsfasdfasdfsadfsadfsadfasdfsadfasdfasdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff-->
+                                        <!--</div>-->
+                                        <!--<div class="body-right">-->
+                                            <!--<a href="javascript:;">-->
+                                                <!--<img src="../../img/redact.png" style="width: 30px;height: 30px;">-->
+                                            <!--</a>-->
+                                            <!--<a href="javascript:;">-->
+                                                <!--<img src="../../img/trash.png" style="width: 20px;height: 20px;">-->
+                                            <!--</a>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="subject-body-option">-->
+                                        <!--<div class="body-left">-->
+                                            <!--你好asdfadsfasdfasdfsadfsadfsadfasdfsadfasdfasdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff-->
+                                        <!--</div>-->
+                                        <!--<div class="body-right">-->
+                                            <!--<a href="javascript:;">-->
+                                                <!--<img src="../../img/redact.png" style="width: 30px;height: 30px;">-->
+                                            <!--</a>-->
+                                            <!--<a href="javascript:;">-->
+                                                <!--<img src="../../img/trash.png" style="width: 20px;height: 20px;">-->
+                                            <!--</a>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="subject-body-option">-->
+                                        <!--<div class="body-left">-->
+                                            <!--你好asdfadsfasdfasdfsadfsadfsadfasdfsadfasdfasdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff-->
+                                        <!--</div>-->
+                                        <!--<div class="body-right">-->
+                                            <!--<a href="javascript:;">-->
+                                                <!--<img src="../../img/redact.png" style="width: 30px;height: 30px;">-->
+                                            <!--</a>-->
+                                            <!--<a href="javascript:;">-->
+                                                <!--<img src="../../img/trash.png" style="width: 20px;height: 20px;">-->
+                                            <!--</a>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div class="subject-body">-->
+
+                            <!--</div>-->
+                            <!--<div class="subject-body">-->
+
+                            <!--</div>-->
+                        </div>
+
+                        <!--答案栏-->
+
+                        <div class="operation-data operation-subject-answer">
+                            <div class="data-top">新增答案项</div>
+                            <div class="add-subject-answer-body">
+                                答案内容:<br/>
+                                <textarea rows="4"></textarea>
+                            </div>
+                            <div class="add-subject-answer-body add-subject-answer-route">
+                                最小分值:<input name="minScore" type="text" oninput = "value=value.replace(/[^\d]/g,'')"/><br/>
+                                最大分值:<input name="maxScore" type="text" oninput = "value=value.replace(/[^\d]/g,'')"/>
+                            </div>
+                            <div class="add-subject-button" style="margin-top: 30px;margin-left: 10%;">
+                                <input id="add-subject-answer" type="button" value="确定"/>
+                                <input class="cancel" type="button" value="取消"/>
+                            </div>
+                        </div>
+
+                        <div class="operation-data delete-subject-answer-data">
+                            <div class="data-top">删除答案项</div>
+                            <div class="delete-subject-answer">
+                                <div>
+                                    确定要删除【<span></span>】吗？
+                                </div>
+                            </div>
+                            <div style="margin-top: 20px;margin-left: 10%;">
+                                <input id="delete-subject-answer" type="button" value="确定"/>
+                                <input class="cancel" type="button" value="取消"/>
+                            </div>
+                        </div>
+
+                        <div class="answer">
+                            <!--<div class="data-top">答案栏-->
+                                <!--<a href="javascript:;">-->
+                                    <!--<img src="../../img/plus.png">-->
+                                <!--</a>-->
+                            <!--</div>-->
+                            <!--<div class="answer-body">-->
+                                <!--<div class="data-top">答案项(<span></span>)-->
+                                    <!--<a href="javascript:;">-->
+                                        <!--<img src="../../img/trash.png">-->
+                                    <!--</a>-->
+                                <!--</div>-->
+                                <!--<div class="answer-body-comment">-->
+                                    <!--<div>-->
+                                        <!--最小分值:<input><br/>-->
+                                        <!--最大分值:<input>-->
+                                    <!--</div>-->
+                                    <!--<h1>答案内容:</h1>-->
+                                    <!--<div class="answer-body-left">-->
+                                        <!--<textarea rows="3" cols="30" disabled="disabled" >dfasdfasdfasdfsadf</textarea>-->
+                                    <!--</div>-->
+                                    <!--<div class="answer-body-right">-->
+                                        <!--<a class="answer-input" href="javascript:;">-->
+                                            <!--<img src="../../img/redact.png" style="width: 30px;height: 30px;">-->
+                                        <!--</a>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="answer-button">-->
+                                    <!--<input class="save-input" type="button" value="保存"/>-->
+                                    <!--<input class="inhibit_input" type="button" value="取消"/>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div class="answer-body">-->
+
+                            <!--</div>-->
+                            <!--<div class="answer-body">-->
+
+                            <!--</div>-->
+                            <!--<div class="answer-body">-->
+
+                            <!--</div>-->
+                            <!--<div class="answer-body">-->
+
+                            <!--</div>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="../../js/jquery.min.js?v=2.1.4"></script>
+<script src="../../js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<script src="../../js/plugins/jeditable/jquery.jeditable.js"></script>
+
+<!-- 自定义js -->
+<script src="../../js/content.js?v=1.0.0"></script>
+
+
+</body>
+
+</html>

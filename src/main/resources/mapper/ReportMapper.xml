@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.ReportMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Report">
+        <id column="sy_report_id" property="syReportId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="ac_user_id" property="acUserId"/>
+        <result column="sy_report_ctgy_id" property="syReportCtgyId"/>
+        <result column="target_type" property="targetType"/>
+        <result column="target_id" property="targetId"/>
+        <result column="content" property="content"/>
+        <association property="reportCtgyName" column="sy_report_ctgy_id" select="selectReportCtgyName"/>
+        <association property="targetTypeName" column="target_type" select="selectTargetTypeName"/>
+        <association property="acUserPhone" column="ac_user_id" select="selectAcUserPhone"/>
+        <association property="acUserName" column="ac_user_id" select="selectAcUserName"/>
+        <association property="status" column="target_id" select="selectStatus"/>
+    </resultMap>
+
+    <select id="selectStatus" resultType="java.lang.Integer">
+      SELECT `status` FROM t_ds_mood WHERE ds_mood_id=#{target_id}
+    </select>
+    <select id="selectReportCtgyName" resultType="java.lang.String">
+      SELECT name FROM t_sy_report_ctgy WHERE sy_report_ctgy_id=#{sy_report_ctgy_id}
+    </select>
+    <select id="selectTargetTypeName" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{target_type}
+    </select>
+    <select id="selectAcUserPhone" resultType="java.lang.String">
+      SELECT phone_number FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectAcUserName" resultType="java.lang.String">
+      SELECT nickname FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+
+    <select id="conditionQueryReport" resultMap="commentResultMap">
+        SELECT * FROM t_sy_report sr
+        <where>
+            <if test="null != report.targetType">
+                sr.target_type LIKE CONCAT('%',#{report.targetType},'%')
+            </if>
+            <if test="null != report.syReportCtgyId">
+                AND sr.sy_report_ctgy_id LIKE CONCAT('%',#{report.syReportCtgyId},'%')
+            </if>
+            <if test="null != report.acUserPhone || null != report.acUserName">
+                AND sr.ac_user_id IN (SELECT au.ac_user_id FROM t_ac_user au
+                <where>
+                    <if test="null != report.acUserPhone">
+                        au.phone_number LIKE CONCAT('%',#{report.acUserPhone},'%')
+                    </if>
+                    <if test="null != report.acUserName">
+                        AND au.nickname LIKE CONCAT('%',#{report.acUserName},'%')
+                    </if>
+                </where>)
+            </if>
+            <if test="null != report.status">
+                AND sr.target_id IN (SELECT dm.ds_mood_id FROM t_ds_mood dm WHERE dm.status LIKE CONCAT('%',#{report.status},'%'))
+            </if>
+        </where>
+        ORDER BY sr.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(sr.sy_report_id) FROM t_sy_report sr
+        <where>
+            <if test="null != targetType">
+                sr.target_type LIKE CONCAT('%',#{targetType},'%')
+            </if>
+            <if test="null != syReportCtgyId">
+                AND sr.sy_report_ctgy_id LIKE CONCAT('%',#{syReportCtgyId},'%')
+            </if>
+            <if test="null != acUserPhone || null != acUserName">
+                AND sr.ac_user_id IN (SELECT au.ac_user_id FROM t_ac_user au
+                <where>
+                    <if test="null != acUserPhone">
+                        au.phone_number LIKE CONCAT('%',#{acUserPhone},'%')
+                    </if>
+                    <if test="null != acUserName">
+                        AND au.nickname LIKE CONCAT('%',#{acUserName},'%')
+                    </if>
+                </where>)
+            </if>
+            <if test="null != status">
+                AND sr.target_id IN (SELECT dm.ds_mood_id FROM t_ds_mood dm WHERE dm.status LIKE CONCAT('%',#{status},'%'))
+            </if>
+        </where>
+    </select>
+
+    <select id="findReportByTarget" resultMap="commentResultMap">
+        SELECT * FROM t_sy_report WHERE target_id=#{targetId}
+    </select>
+
+    <resultMap id="reportResultMap" type="com.ynw.system.entity.Report">
+        <association property="mood" column="target_id" select="selectReportMood"/>
+        <association property="reportNumber" column="target_id" select="selectReportNumber"/>
+    </resultMap>
+
+    <resultMap id="moodResultMap" type="com.ynw.system.entity.Mood">
+        <id column="ds_mood_id" property="dsMoodId"/>
+        <result column="create_time" property="createTime"/>
+        <association property="labelList" column="ds_mood_id" select="selectLabelList"/>
+        <association property="userImage" column="ac_user_id" select="selectUserImage"/>
+        <association property="userName" column="ac_user_id" select="selectUserName"/>
+        <association property="userPhone" column="ac_user_id" select="selectUserPhone"/>
+    </resultMap>
+
+    <select id="selectUserImage" resultType="java.lang.String">
+      SELECT head_image_url FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserName" resultType="java.lang.String">
+      SELECT nickname FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserPhone" resultType="java.lang.String">
+      SELECT phone_number FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectLabelList" resultType="java.lang.String">
+      SELECT dl.name FROM t_ds_label dl WHERE dl.ds_label_id IN (SELECT mrl.ds_label_id FROM t_ds_mood_label_rel mrl
+      WHERE mrl.ds_mood_id=#{ds_mood_id})
+    </select>
+    <select id="selectReportMood" resultMap="moodResultMap">
+      SELECT * FROM t_ds_mood WHERE ds_mood_id=#{target_id}
+    </select>
+    <select id="selectReportNumber" resultType="java.lang.Integer">
+      SELECT COUNT(sy_report_id) FROM t_sy_report WHERE target_id=#{target_id}
+    </select>
+    
+    <select id="findReportTarget" resultMap="reportResultMap">
+        SELECT MAX(rep.create_time) AS create_time, rep.target_id FROM t_sy_report rep
+        <where>
+            <if test="null != name || null != phone">
+                rep.target_id IN (SELECT dm.ds_mood_id FROM t_ds_mood dm WHERE dm.ac_user_id IN (
+                SELECT au.ac_user_id FROM t_ac_user au
+                <where>
+                    <if test="null != name">
+                        au.nickname LIKE CONCAT('%',#{name},'%')
+                    </if>
+                    <if test="null != phone">
+                        AND au.phone_number LIKE CONCAT('%',#{phone},'%')
+                    </if>
+                </where>
+                ))
+            </if>
+        </where>
+         GROUP BY rep.target_id ORDER BY create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+
+    <select id="countReportTarget" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM (SELECT target_id FROM t_sy_report rep
+        <where>
+            <if test="null != name || null != phone">
+                rep.target_id IN (SELECT dm.ds_mood_id FROM t_ds_mood dm WHERE dm.ac_user_id IN (
+                  SELECT au.ac_user_id FROM t_ac_user au
+                  <where>
+                      <if test="null != name">
+                          au.nickname LIKE CONCAT('%',#{name},'%')
+                      </if>
+                      <if test="null != phone">
+                          AND au.phone_number LIKE CONCAT('%',#{phone},'%')
+                      </if>
+                  </where>
+                ))
+            </if>
+        </where>
+         GROUP BY rep.target_id) sy
+    </select>
+
+</mapper>

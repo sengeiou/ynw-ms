@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>活动内容</title>
+    <script type="text/javascript" src="../../../js/jquery.js"></script>
+    <script type="text/javascript" src="activity_content.js"></script>
+    <style type="text/css" >
+        .content {
+            width: 60%;
+            margin: 0px auto;
+        }
+    </style>
+</head>
+<body>
+    <input class="back" type="button" value="返回" style="width: 100px"/>
+    <input id="atRegisterId" type="hidden" th:value="${atRegisterId}">
+    <input id="resourceId" type="hidden" th:value="${msResourceId}">
+    <div class="content"></div>
+</body>
+</html>

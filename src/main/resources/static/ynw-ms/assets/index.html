@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--360浏览器优先以webkit内核解析-->
+
+
+    <title> - 主页示例</title>
+
+    <link rel="shortcut icon" href="favicon.ico"> <link href="css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css?v=4.1.0" rel="stylesheet">
+    <script src="js/getDate.js"></script>
+    <style>
+        .index-top {
+            width: 90%;
+            height: 100px;
+            border-bottom: 1px dashed grey;
+            margin: 0px auto;
+            margin-bottom: 20px;
+            line-height: 60px;
+            font-size: 2vw;
+            color: #FF6600;
+        }
+        .index-top-left {
+            width: 20%;
+            height: 60%;
+            margin-top: 20px;
+            float: left;
+        }
+        .index-top-right {
+            width: 80%;
+            height: 60%;
+            background: #FFFFDF;
+            margin-top: 20px;
+            float: left;
+        }
+        .statistics {
+            width: 18%;
+            height: 160px;
+            border: 1px solid black;
+            float: left;
+            margin: 10px;
+            text-align: center;
+        }
+        .statistics-top {
+            width: 100%;
+            height: 40px;
+            border-bottom: 1px solid black;
+            line-height: 40px;
+            font-size: 18px;
+        }
+        .statistics-body {
+            width: 100%;
+            height: 118px;
+            font-size: 30px;
+            line-height: 120px;
+            color: black;
+            font-weight:bold
+        }
+    </style>
+
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="index-top">
+            <div class="index-top-left"></div>
+            <div class="index-top-right">感到忙，不是因为你有许多事在做，而是因为许多事还没有做。</div>
+        </div>
+        <div class="statistics">
+            <div class="statistics-top" style="background: #FFC993">总用户量</div>
+            <div class="statistics-body" id="acUser" style="background: #FFEEDD"></div>
+        </div>
+        <div class="statistics">
+            <div class="statistics-top" style="background: #FFC993">今日新增用户量</div>
+            <div class="statistics-body" id="nowAcUser" style="background: #FFEEDD"></div>
+        </div>
+        <div class="statistics">
+            <div class="statistics-top" style="background: #FFAED7">今日新建关注关系量</div>
+            <div class="statistics-body" id="nowAttention" style="background: #FFDFEF"></div>
+        </div>
+        <div class="statistics">
+            <div class="statistics-top" style="background: #FFAED7">今日新建好友关系量</div>
+            <div class="statistics-body" id="nowFriend" style="background: #FFDFEF"></div>
+        </div>
+        <div class="statistics">
+            <div class="statistics-top" style="background: #AED7FF">今日签到人数</div>
+            <div class="statistics-body" id="nowSignIn" style="background: #DFF4FF"></div>
+        </div>
+        <div class="statistics">
+            <div class="statistics-top" style="background: #ACFFFF">今日新增动态量</div>
+            <div class="statistics-body" id="nowMood" style="background: #E1FFFF"></div>
+        </div>
+        <div class="statistics">
+            <div class="statistics-top" style="background: #AEFFAE">今日情豆发放量</div>
+            <div class="statistics-body" id="nowLoveGrant" style="background: #DFFFDF"></div>
+        </div>
+        <div class="statistics">
+            <div class="statistics-top" style="background: #AEFFAE">今日情豆回收量</div>
+            <div class="statistics-body" id="nowLoveRecycle" style="background: #DFFFDF"></div>
+        </div>
+        <div class="statistics">
+            <div class="statistics-top" style="background: #AEFFAE">今日情豆转移量</div>
+            <div class="statistics-body" id="nowLoveTransfer" style="background: #DFFFDF"></div>
+        </div>
+        <div class="statistics">
+            <div class="statistics-top" style="background: #D6ACFF">今日问卷测试量</div>
+            <div class="statistics-body" id="nowExamText" style="background: #F0E1FF"></div>
+        </div>
+        <div class="statistics">
+            <div class="statistics-top" style="background: #D6ACFF">今日问卷测试人数</div>
+            <div class="statistics-body" id="nowExamUserNum" style="background: #F0E1FF"></div>
+        </div>
+    </div>
+    <!-- 全局js -->
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="js/plugins/layer/layer.min.js"></script>
+    <!-- Flot -->
+    <script src="js/plugins/flot/jquery.flot.js"></script>
+    <script src="js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+    <script src="js/plugins/flot/jquery.flot.resize.js"></script>
+    <script src="js/plugins/flot/jquery.flot.pie.js"></script>
+    <!-- 自定义js -->
+    <script src="js/content.js"></script>
+    <!--flotdemo-->
+    <script src="js/getDate.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var date = getNowDate();
+            $(".index-top-left").text(date);
+            $.ajax({
+                type:"post",
+                url:"../statistics",
+                data: {
+                },
+                // contentType: "application/json",
+                dataType: "json",
+                success: function(res){
+                    if (res.code == 1) {
+                        var value = res.result;
+                        $("#acUser").text(value.acUser);
+                        $("#nowAcUser").text(value.nowAcUser);
+                        $("#nowAttention").text(value.nowAttention);
+                        $("#nowFriend").text(value.nowFriend);
+                        $("#nowSignIn").text(value.nowSignIn);
+                        $("#nowMood").text(value.nowMood);
+                        $("#nowLoveGrant").text(value.nowLoveGrant);
+                        $("#nowLoveRecycle").text(value.nowLoveRecycle);
+                        $("#nowLoveTransfer").text(value.nowLoveTransfer);
+                        $("#nowExamText").text(value.nowExamText);
+                        $("#nowExamUserNum").text(value.nowExamUserNum);
+                    } else {
+                        layer.msg(res.message,{icon:2});
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

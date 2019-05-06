@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.MoodMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Mood">
+        <id column="ds_mood_id" property="dsMoodId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="ac_user_id" property="acUserId"/>
+        <result column="content" property="content"/>
+        <result column="auth_type" property="authType"/>
+        <result column="is_anonymous" property="isAnonymous"/>
+        <result column="is_god_comment" property="isGodComment"/>
+        <result column="parent_mood_id" property="parentMoodId"/>
+        <result column="root_mood_id" property="rootMoodId"/>
+        <result column="status" property="status"/>
+        <association property="labelList" column="ds_mood_id" select="selectLabelList"/>
+        <association property="userImage" column="ac_user_id" select="selectUserImage"/>
+        <association property="userName" column="ac_user_id" select="selectUserName"/>
+        <association property="userPhone" column="ac_user_id" select="selectUserPhone"/>
+    </resultMap>
+    <resultMap id="moodResultMap" type="com.ynw.system.entity.Mood" extends="commentResultMap">
+        <association property="moodImgList" column="ds_mood_id" select="selectMoodImgList"/>
+    </resultMap>
+    <resultMap id="moodFullResultMap" type="com.ynw.system.entity.Mood" extends="commentResultMap">
+        <association property="likeNum" column="ds_mood_id" select="selectLikeNum"/>
+        <association property="commentNum" column="ds_mood_id" select="selectCommentNum"/>
+        <association property="transPondNum" column="ds_mood_id" select="selectTransPondNum"/>
+        <association property="lookNum" column="ds_mood_id" select="selectLookNum"/>
+    </resultMap>
+    <resultMap id="moodCommentResultMap" type="com.ynw.system.entity.Mood">
+        <id column="ds_mood_id" property="dsMoodId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="ac_user_id" property="acUserId"/>
+        <result column="parent_mood_id" property="parentMoodId"/>
+        <result column="content" property="content"/>
+        <association property="userImage" column="ac_user_id" select="selectUserImage"/>
+        <association property="userName" column="ac_user_id" select="selectUserName"/>
+        <association property="replyUserName" column="parent_mood_id" select="selectReplyUserName"/>
+    </resultMap>
+
+    <select id="selectReplyUserName" resultType="java.lang.String">
+      SELECT us.nickname FROM t_ac_user us WHERE us.ac_user_id IN (SELECT dm.ac_user_id FROM t_ds_mood dm WHERE dm.ds_mood_id=#{parent_mood_id})
+    </select>
+    <select id="selectMoodImgList" resultType="java.lang.String">
+      SELECT image_url FROM t_ds_mood_image WHERE ds_mood_id=#{ds_mood_id}
+    </select>
+    <select id="selectUserImage" resultType="java.lang.String">
+      SELECT head_image_url FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserName" resultType="java.lang.String">
+      SELECT nickname FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserPhone" resultType="java.lang.String">
+      SELECT phone_number FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectLabelList" resultType="java.lang.String">
+      SELECT dl.name FROM t_ds_label dl WHERE dl.ds_label_id IN (SELECT mrl.ds_label_id FROM t_ds_mood_label_rel mrl
+      WHERE mrl.ds_mood_id=#{ds_mood_id})
+    </select>
+    <select id="selectLikeNum" resultType="java.lang.Integer">
+      SELECT quantity FROM t_st_composite WHERE target_id=#{ds_mood_id} AND target_type='STET_ADMIRE'
+    </select>
+    <select id="selectCommentNum" resultType="java.lang.Integer">
+      SELECT quantity FROM t_st_composite WHERE target_id=#{ds_mood_id} AND target_type='STET_COMMENT'
+    </select>
+    <select id="selectTransPondNum" resultType="java.lang.Integer">
+     SELECT quantity FROM t_st_composite WHERE target_id=#{ds_mood_id} AND target_type='STET_TRANSPOND'
+    </select>
+    <select id="selectLookNum" resultType="java.lang.Integer">
+      SELECT quantity FROM t_st_composite WHERE target_id=#{ds_mood_id} AND target_type='STET_PAGE_VIEW'
+    </select>
+
+
+    <select id="conditionQueryMood" resultMap="moodFullResultMap">
+        SELECT * FROM t_ds_mood dm
+        <where>
+            (dm.root_mood_id IS NULL OR dm.is_transpond=1)
+            <if test="null != mood.userPhone">
+                AND dm.ac_user_id IN (SELECT us.ac_user_id FROM t_ac_user us WHERE us.phone_number LIKE CONCAT('%',#{mood.userPhone},'%'))
+            </if>
+            <if test="null != label">
+                AND dm.ds_mood_id IN (SELECT ml.ds_mood_id FROM t_ds_mood_label_rel ml where ml.ds_label_id
+                LIKE CONCAT('%',#{label},'%'))
+            </if>
+        </where>
+        ORDER BY dm.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(dm.ds_mood_id) FROM t_ds_mood dm
+        <where>
+            (dm.root_mood_id IS NULL OR dm.is_transpond=1)
+            <if test="null != mood.userPhone">
+                AND dm.ac_user_id IN (SELECT us.ac_user_id FROM t_ac_user us WHERE us.phone_number LIKE CONCAT('%',#{mood.userPhone},'%'))
+            </if>
+            <if test="null != label">
+                AND dm.ds_mood_id IN (SELECT ml.ds_mood_id FROM t_ds_mood_label_rel ml where ml.ds_label_id
+                LIKE CONCAT('%',#{label},'%'))
+            </if>
+        </where>
+    </select>
+    <select id="findById" resultMap="moodResultMap">
+        SELECT * FROM t_ds_mood WHERE ds_mood_id=#{dsMoodId}
+    </select>
+    <select id="findMoodCommentByRootMoodId" resultMap="moodCommentResultMap">
+        SELECT * FROM t_ds_mood WHERE root_mood_id=#{rootMoodId} ORDER BY create_time DESC
+    </select>
+    <select id="nowCount" resultType="java.lang.Integer">
+        SELECT COUNT(ds_mood_id) FROM t_ds_mood WHERE create_time LIKE CONCAT('%',#{nowTime},'%') AND (root_mood_id IS NULL OR is_transpond=1)
+    </select>
+
+    <update id="delete">
+        UPDATE t_ds_mood SET status=-1 WHERE ds_mood_id=#{moodId}
+    </update>
+
+</mapper>

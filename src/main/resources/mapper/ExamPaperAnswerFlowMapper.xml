@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.ExamPaperAnswerFlowMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.ExamPaperAnswerFlow">
+        <id column="kb_test_answer_flow_id" property="kbTestAnswerFlowId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="kb_exampaper_test_id" property="kbExampaperTestId"/>
+        <result column="kb_subject_id" property="kbSubjectId"/>
+        <result column="kb_subject_item_id" property="kbSubjectItemId"/>
+        <association property="subjectName" column="kb_subject_id" select="selectSubjectName"/>
+        <association property="subjectItemName" column="kb_subject_item_id" select="selectSubjectItemName"/>
+    </resultMap>
+
+    <select id="selectSubjectName" resultType="java.lang.String">
+        SELECT content FROM t_kb_subject WHERE kb_subject_id=#{kb_subject_id}
+    </select>
+    <select id="selectSubjectItemName" resultType="java.lang.String">
+        SELECT content FROM t_kb_subject_item WHERE kb_subject_item_id=#{kb_subject_item_id}
+    </select>
+
+    <select id="findByExamId" resultMap="commentResultMap">
+        SELECT * FROM t_kb_test_answer_flow WHERE kb_exampaper_test_id=#{kbExampaperTestId}
+    </select>
+
+</mapper>

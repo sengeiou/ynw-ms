@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title> - 数据表格</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="../../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+
+    <link href="../../css/animate.css" rel="stylesheet">
+    <link href="../../css/style.css?v=4.1.0" rel="stylesheet">
+
+    <script type="text/javascript" src="../../../js/jquery.js"></script>
+    <script type="text/javascript" src="administrative.js"></script>
+    <script type="text/javascript" src="../../js/getDate.js"></script>
+    <link rel="stylesheet" href="../../../css/page/easyhelper.min.css">
+    <!--<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"></script>-->
+    <script src="../../js/jquery-3.3.1.min.js"></script>
+    <script src="../../../js/page/jquery.transit.min.js"></script>
+    <script src="../../../js/page/es6-shim.min.js"></script>
+    <script src="../../../js/page/easyhelper.min.js"></script>
+    <script src="../../../js/page/comment.js"></script>
+    <link rel="stylesheet" href="../../../css/comment.css">
+    <script type="text/javascript" src="../../../js/layer-v3.0.3/layer/layer.js"></script>
+    <style>
+        .operation-data,.operation-delete-data {
+            width: 500px;
+            height: 300px;
+            border: 1px solid black;
+            margin-left: 30%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 5;
+            background: white;
+            display: none;
+        }
+        .data-button {
+            width: 68%;
+            margin-left: 15%;
+            margin-top: 8%;
+        }
+        .data-button input {
+            margin-left: 10%;
+        }
+        .role-body {
+            margin: 8% 20%;
+        }
+        .role-body input {
+            margin: 10px;
+        }
+        .role-body select {
+            width: 200px;
+            height: 30px;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        .role-delete-body {
+            margin: 20px;
+            text-align: center;
+            font-size: 18px;
+            height: 40%;
+        }
+        /*.role-and-resource {*/
+            /*height: 60%;*/
+            /*width: 101%;*/
+            /*overflow: hidden;*/
+            /*overflow-y:scroll;*/
+        /*}*/
+        /*.comment-data {*/
+            /*overflow: hidden;*/
+        /*}*/
+        .administrative_body {
+            width: 100%;
+            height: 400px;
+            border: 1px solid black;
+            float: left;
+        }
+        .administrative_td {
+            width: 30%;
+        }
+        .administrative_left {
+            margin: 2%;
+            width: 65%;
+            height: 85%;
+            overflow:hidden;
+            overflow-y:scroll;
+            float: left;
+            border: 1px solid black;
+        }
+        .administrative_right {
+            width: 30%;
+            height: 89%;
+            float: right;
+        }
+        .administrative_body input {
+            width: 60%;
+            margin-top: 10%;
+            margin-left: 10%;
+        }
+        .screen input {
+            width: 20px;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <!--添加省份-->
+    <div class="operation-data" id="add-province-data">
+        <div class="data-top">添加省份</div>
+        <div class="role-body" id="add-province">
+            省份名称：<input name="name" type="text"/>
+        </div>
+        <div class="button data-button">
+            <input id="add-province-confirm" type="button" value="确定"/>
+            <input class="cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--编辑省份-->
+    <div class="operation-data" id="update-province-data">
+        <div class="data-top">编辑省份</div>
+        <div class="role-body">
+            省份名称：<input name="name" type="text"/>
+        </div>
+        <div class="button data-button">
+            <input id="update-province-confirm" type="button" value="确定"/>
+            <input class="cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--删除省份-->
+    <div class="operation-delete-data" id="delete-province-data">
+        <div class="data-top">删除省份</div>
+        <div class="role-delete-body">
+            您确定要删除【<span></span>】吗？,删除前请先确保该数据没有其他关联，否则不可删除！
+        </div>
+        <div class="button data-button">
+            <input id="delete-province-confirm" type="button" value="确定"/>
+            <input class="cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--添加城市-->
+    <div class="operation-data" id="add-city-data">
+        <div class="data-top">添加城市</div>
+        <div class="role-body" id="add-city">
+            城市名称：<input name="name" type="text"/>
+        </div>
+        <div class="button data-button">
+            <input id="add-city-confirm" type="button" value="确定"/>
+            <input class="cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--编辑城市-->
+    <div class="operation-data" id="update-city-data">
+        <div class="data-top">编辑城市</div>
+        <div class="role-body">
+            城市名称：<input name="name" type="text"/>
+        </div>
+        <div class="button data-button">
+            <input id="update-city-confirm" type="button" value="确定"/>
+            <input class="cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--删除城市-->
+    <div class="operation-delete-data" id="delete-city-data">
+        <div class="data-top">删除城市</div>
+        <div class="role-delete-body">
+            您确定要删除【<span></span>】吗？,删除前请先确保该数据没有其他关联，否则不可删除！
+        </div>
+        <div class="button data-button">
+            <input id="delete-city-confirm" type="button" value="确定"/>
+            <input class="cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--添加县区-->
+    <div class="operation-data" id="add-district-data">
+        <div class="data-top">添加县区</div>
+        <div class="role-body" id="add-district">
+            县区名称：<input name="name" type="text"/>
+        </div>
+        <div class="button data-button">
+            <input id="add-district-confirm" type="button" value="确定"/>
+            <input class="cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--编辑县区-->
+    <div class="operation-data" id="update-district-data">
+        <div class="data-top">编辑县区</div>
+        <div class="role-body">
+            县区名称：<input name="name" type="text"/>
+        </div>
+        <div class="button data-button">
+            <input id="update-district-confirm" type="button" value="确定"/>
+            <input class="cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--删除县区-->
+    <div class="operation-delete-data" id="delete-district-data">
+        <div class="data-top">删除县区</div>
+        <div class="role-delete-body">
+            您确定要删除【<span></span>】吗？,删除前请先确保该数据没有其他关联，否则不可删除！
+        </div>
+        <div class="button data-button">
+            <input id="delete-district-confirm" type="button" value="确定"/>
+            <input class="cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>行政区划管理
+                        <!--<small>分类，查找</small>-->
+                    </h5>
+                    <div class="ibox-tools">
+                        <input id="userId" type="hidden" th:value="${msUserId}">
+                        <input id="resourceId" type="hidden" th:value="${msResourceId}"/>
+                    </div>
+                </div>
+                <div class="screen">
+                    <div>
+                        <h1>名称 :</h1>
+                        <input id="name" type="text" style="width: 80%"/>
+                    </div>
+                    <div>
+                        <h1>级别 :</h1>
+                        <input class="rank" type="radio" name="rank"/>省份
+                        <input class="rank" type="radio" name="rank"/>城市
+                        <input class="rank" type="radio" name="rank"/>区县
+                    </div>
+                    <div>
+                        <h1></h1>
+                        <input type="button" value="搜  索" style="width: 100px;background: #0A6AA1;color: white"/>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div id="bottom-left">
+                    </div>
+                    <div id="bottom-right">
+                    </div>
+                    <div class="bottom_manage">
+                    </div>
+                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                        <thead>
+                        <tr>
+                            <td class="administrative_td">
+                                <div class="administrative_body">
+                                    <div class="data-top">省份</div>
+                                    <div class="administrative_left province"></div>
+                                    <div class="administrative_right province_button">
+                                        <!--<input type="button" value="新增"/>-->
+                                        <!--<input type="button" value="编辑"/>-->
+                                        <!--<input type="button" value="删除"/>-->
+                                        <!--<input type="button" value="上移"/>-->
+                                        <!--<input type="button" value="下移"/>-->
+                                    </div>
+                                </div>
+                            </td>
+                            <td><img src="../../img/left.png"></td>
+                            <td class="administrative_td">
+                                <div class="administrative_body">
+                                    <div class="data-top">城市</div>
+                                    <div class="administrative_left city"></div>
+                                    <div class="administrative_right city_button">
+                                        <!--<input type="button" value="新增"/>-->
+                                        <!--<input type="button" value="编辑"/>-->
+                                        <!--<input type="button" value="删除"/>-->
+                                        <!--<input type="button" value="上移"/>-->
+                                        <!--<input type="button" value="下移"/>-->
+                                    </div>
+                                </div>
+                            </td>
+                            <td><img src="../../img/left.png"></td>
+                            <td class="administrative_td">
+                                <div class="administrative_body">
+                                    <div class="data-top">区县</div>
+                                    <div class="administrative_left district"></div>
+                                    <div class="administrative_right district_button">
+                                        <!--<input type="button" value="新增"/>-->
+                                        <!--<input type="button" value="编辑"/>-->
+                                        <!--<input type="button" value="删除"/>-->
+                                        <!--<input type="button" value="上移"/>-->
+                                        <!--<input type="button" value="下移"/>-->
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="../../js/jquery.min.js?v=2.1.4"></script>
+<script src="../../js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<script src="../../js/plugins/jeditable/jquery.jeditable.js"></script>
+
+<!-- 自定义js -->
+<script src="../../js/content.js?v=1.0.0"></script>
+
+
+</body>
+
+</html>

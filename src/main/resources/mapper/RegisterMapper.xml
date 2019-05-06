@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.RegisterMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Register">
+        <id column="at_register_id" property="atRegisterId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="at_ctgy_id" property="atCtgyId"/>
+        <result column="name" property="name"/>
+        <result column="begin_time" property="beginTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="apply_begin_time" property="applyBeginTime"/>
+        <result column="apply_end_time" property="applyEndTime"/>
+        <result column="bg_image_url" property="bgImageUrl"/>
+        <result column="content" property="content"/>
+        <result column="update_time" property="updateTime"/>
+        <association property="classifyName" column="at_ctgy_id" select="selectClassifyName"/>
+        <association property="registrationNumber" column="at_register_id" select="selectRegistrationNumber"/>
+    </resultMap>
+
+    <select id="selectRegistrationNumber" resultType="java.lang.Integer">
+      SELECT COUNT(at_wkcp_user_id) FROM t_at_wkcp_user WHERE at_register_id=#{at_register_id}
+    </select>
+    <select id="selectClassifyName" resultType="java.lang.String">
+      SELECT `name` FROM t_at_ctgy WHERE at_ctgy_id=#{at_ctgy_id}
+    </select>
+
+    <select id="conditionQueryRegister" resultMap="commentResultMap">
+        SELECT * FROM t_at_register ar
+        <where>
+            ar.at_ctgy_id IN (SELECT ac.at_ctgy_id FROM t_at_ctgy ac WHERE `key` = 'ACTIVITY_TYPE_WEEKCP')
+            <if test="null != register.name">
+                AND ar.name LIKE CONCAT('%',#{register.name},'%')
+            </if>
+            <if test="null != register.atCtgyId">
+                AND ar.at_ctgy_id LIKE CONCAT('%',#{register.atCtgyId},'%')
+            </if>
+            <if test="status == 1">
+                AND ar.begin_time > NOW()
+            </if>
+            <if test="status == 2">
+                AND NOW() BETWEEN ar.begin_time AND ar.end_time
+            </if>
+            <if test="status == 3">
+                AND NOW() > ar.end_time
+            </if>
+        </where>
+        ORDER BY ar.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(ar.at_register_id) FROM t_at_register ar
+        <where>
+            ar.at_ctgy_id IN (SELECT ac.at_ctgy_id FROM t_at_ctgy ac WHERE `key` = 'ACTIVITY_TYPE_WEEKCP')
+            <if test="null != register.name">
+                AND ar.name LIKE CONCAT('%',#{register.name},'%')
+            </if>
+            <if test="null != register.atCtgyId">
+                AND ar.at_ctgy_id LIKE CONCAT('%',#{register.atCtgyId},'%')
+            </if>
+            <if test="status == 1">
+                AND ar.begin_time > NOW()
+            </if>
+            <if test="status == 2">
+                AND NOW() BETWEEN ar.begin_time AND ar.end_time
+            </if>
+            <if test="status == 3">
+                AND NOW() > ar.end_time
+            </if>
+        </where>
+    </select>
+
+</mapper>

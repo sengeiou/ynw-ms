@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.ActiveTaskClockMapper">
+    <resultMap id="generalDutyResultMap" type="com.ynw.system.entity.ActiveTaskClock">
+        <id column="at_wkcp_task_id" property="atWkcpTaskId"/>
+        <result column="at_register_id" property="atRegisterId"/>
+        <result column="day" property="day"/>
+        <result property="taskDes" column="task_des"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="findAllByActivityId" resultMap="generalDutyResultMap">
+      SELECT * FROM t_at_wkcp_task WHERE at_register_id=#{registerId} ORDER BY `day` ASC
+    </select>
+</mapper>

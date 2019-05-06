@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.PushBodyMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.PushBody">
+        <id column="mg_body_id" property="mgBodyId"/>
+        <result column="type" property="type"/>
+        <result column="group" property="group"/>
+        <result column="send_scope" property="sendScope"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="image_url" property="imageUrl"/>
+        <result column="web_url" property="webUrl"/>
+        <result column="target_module_name" property="targetModuleName"/>
+        <result column="target_module_para" property="targetModulePara"/>
+        <result column="begin_time" property="beginTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="sort" property="sort"/>
+    </resultMap>
+    <resultMap id="PushBodyResultMap" type="com.ynw.system.entity.PushBody" extends="commentResultMap">
+        <association property="typeName" column="type" select="selectTypeName"/>
+        <association property="groupName" column="group" select="selectGroupName"/>
+        <association property="sendScopeName" column="send_scope" select="selectSendScopeName"/>
+        <association property="targetModule" column="target_module_name" select="selectTargetModule"/>
+        <association property="businessType" column="mg_body_id" select="selectBusinessType"/>
+        <association property="send" column="mg_body_id" select="selectSend"/>
+    </resultMap>
+
+    <select id="selectTypeName" resultType="java.lang.String">
+        SELECT ds.item_value FROM t_sy_dictionary ds WHERE ds.item_key=#{type}
+    </select>
+    <select id="selectGroupName" resultType="java.lang.String">
+        SELECT ds.item_value FROM t_sy_dictionary ds WHERE ds.item_key=#{group}
+    </select>
+    <select id="selectSendScopeName" resultType="java.lang.String">
+        SELECT ds.item_value FROM t_sy_dictionary ds WHERE ds.item_key=#{send_scope}
+    </select>
+    <select id="selectTargetModule" resultType="java.lang.String">
+        SELECT ds.item_value FROM t_sy_dictionary ds WHERE ds.item_key=#{target_module_name}
+    </select>
+    <select id="selectBusinessType" resultType="java.lang.String">
+        SELECT ds.item_value FROM t_sy_dictionary ds WHERE ds.item_key IN (SELECT bm.busi_type FROM t_mg_business bm WHERE bm.mg_body_id=#{mg_body_id})
+    </select>
+    <select id="selectSend" resultType="java.lang.Integer">
+        SELECT sm.status FROM t_mg_send sm WHERE sm.mg_body_id=#{mg_body_id}
+    </select>
+
+    <select id="conditionQueryPshBody" resultMap="PushBodyResultMap">
+        SELECT * FROM t_mg_body bm
+        <where>
+            <if test="null != body.title">
+                bm.title LIKE CONCAT('%',#{body.title},'%')
+            </if>
+            <if test="null != body.businessType">
+                AND bm.mg_body_id IN (SELECT bum.mg_body_id FROM t_mg_business bum WHERE bum.busi_type LIKE CONCAT('%',#{body.businessType},'%'))
+            </if>
+            <if test="null != body.type">
+                AND bm.type LIKE CONCAT('%',#{body.type},'%')
+            </if>
+            <if test="null != body.group">
+                AND bm.group LIKE CONCAT('%',#{body.group},'%')
+            </if>
+            <if test="null != body.group">
+                AND bm.send_scope LIKE CONCAT('%',#{body.sendScope},'%')
+            </if>
+            <if test="null != body.send">
+                AND bm.mg_body_id IN (SELECT ms.mg_body_id FROM t_mg_send ms WHERE ms.status LIKE CONCAT('%',#{body.send},'%'))
+            </if>
+        </where>
+        ORDER BY bm.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(bm.mg_body_id) FROM t_mg_body bm
+        <where>
+            <if test="null != title">
+                bm.title LIKE CONCAT('%',#{title},'%')
+            </if>
+            <if test="null != businessType">
+                AND bm.mg_body_id IN (SELECT bum.mg_body_id FROM t_mg_business bum WHERE bum.busi_type LIKE CONCAT('%',#{businessType},'%'))
+            </if>
+            <if test="null != type">
+                AND bm.type LIKE CONCAT('%',#{type},'%')
+            </if>
+            <if test="null != group">
+                AND bm.group LIKE CONCAT('%',#{group},'%')
+            </if>
+            <if test="null != group">
+                AND bm.send_scope LIKE CONCAT('%',#{sendScope},'%')
+            </if>
+            <if test="null != send">
+                AND bm.mg_body_id IN (SELECT ms.mg_body_id FROM t_mg_send ms WHERE ms.status LIKE CONCAT('%',#{send},'%'))
+            </if>
+        </where>
+    </select>
+</mapper>

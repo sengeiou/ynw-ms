@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.ImGroupMemberMapper">
+    <resultMap id="BaseResultMap" type="com.ynw.system.entity.ImGroupMember">
+        <id column="im_group_member_id" jdbcType="VARCHAR" property="imGroupMemberId" />
+        <result column="im_group_id" jdbcType="VARCHAR" property="imGroupId" />
+        <result column="member_id" jdbcType="VARCHAR" property="memberId" />
+        <result column="role" jdbcType="TINYINT" property="role" />
+        <result column="in_blist" jdbcType="TINYINT" property="inBlist" />
+        <result column="is_nospeak" jdbcType="TINYINT" property="isNospeak" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+    <update id="updateBlackStatus" parameterType="map">
+        UPDATE t_im_group_member SET in_blist=#{status} WHERE  member_id IN (SELECT ac_user_id FROM t_ac_user u WHERE u.im_user_id
+        IN
+        <foreach collection="members" separator="," close=")" open="(" item="member" index="index">
+            #{member}
+        </foreach>
+        )
+        AND im_group_id=(SELECT g.im_group_id FROM t_im_group g WHERE g.hx_group_id=#{groupId})
+    </update>
+
+    <delete id="deleteMemeberInGroup" parameterType="map">
+        DELETE FROM t_im_group_member
+        WHERE member_id IN (SELECT  u.ac_user_id FROM t_ac_user u WHERE u.im_user_id IN
+        <foreach collection="members" index="index" item="member" open="(" close=")" separator=",">
+            #{member}
+        </foreach>)
+        AND im_group_id=(SELECT g.im_group_id FROM t_im_group g WHERE g.hx_group_id=#{groupId})
+    </delete>
+
+    <insert id="insertMember" parameterType="com.ynw.system.entity.ImGroupMember">
+    INSERT INTO t_im_group_member (im_group_member_id, im_group_id, member_id,
+      role, in_blist, is_nospeak,
+      create_time)
+    VALUES (#{imGroupMemberId,jdbcType=VARCHAR}, #{imGroupId,jdbcType=VARCHAR},(SELECT ac_user_id FROM t_ac_user WHERE im_user_id=#{memberId,jdbcType=VARCHAR}) ,
+      #{role,jdbcType=TINYINT}, #{inBlist,jdbcType=TINYINT}, #{isNospeak,jdbcType=TINYINT},
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+</mapper>

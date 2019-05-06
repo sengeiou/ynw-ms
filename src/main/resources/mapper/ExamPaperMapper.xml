@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.ExamPaperMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.ExamPaper">
+        <id column="kb_exampaper_id" property="kbExampaperId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="kb_exampaper_ctgy_id" property="kbExampaperCtgyId"/>
+        <result column="title" property="title"/>
+        <result column="type" property="type"/>
+        <result column="status" property="status"/>
+        <result column="sort" property="sort"/>
+        <association property="examPaperCtgyName" column="kb_exampaper_ctgy_id" select="selectExamPaperCtgyName"/>
+        <association property="typeName" column="type" select="selectTypeName"/>
+        <association property="examNum" column="kb_exampaper_id" select="selectExamNum"/>
+    </resultMap>
+
+    <select id="selectExamNum" resultType="java.lang.Integer">
+      SELECT COUNT(kb_subject_id) FROM t_kb_subject WHERE kb_exampaper_id=#{kb_exampaper_id}
+    </select>
+    <select id="selectExamPaperCtgyName" resultType="java.lang.String">
+      SELECT name FROM t_kb_exampaper_ctgy WHERE kb_exampaper_ctgy_id=#{kb_exampaper_ctgy_id}
+    </select>
+    <select id="selectTypeName" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{type}
+    </select>
+
+
+    <select id="conditionQueryExamPaper" resultMap="commentResultMap">
+        SELECT * FROM t_kb_exampaper exam
+        <where>
+            <if test="null != examPaper.title">
+                exam.title LIKE CONCAT('%',#{examPaper.title},'%')
+            </if>
+            <if test="null != examPaper.kbExampaperCtgyId">
+                AND exam.kb_exampaper_ctgy_id LIKE CONCAT('%',#{examPaper.kbExampaperCtgyId},'%')
+            </if>
+            <if test="null != examPaper.type">
+                AND exam.type LIKE CONCAT('%',#{examPaper.type},'%')
+            </if>
+        </where>
+        ORDER BY exam.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(exam.kb_exampaper_id) FROM t_kb_exampaper exam
+        <where>
+            <if test="null != title">
+                exam.title LIKE CONCAT('%',#{title},'%')
+            </if>
+            <if test="null != kbExampaperCtgyId">
+                AND exam.kb_exampaper_ctgy_id LIKE CONCAT('%',#{kbExampaperCtgyId},'%')
+            </if>
+            <if test="null != type">
+                AND exam.type LIKE CONCAT('%',#{type},'%')
+            </if>
+        </where>
+    </select>
+    <select id="findBySortMax" resultMap="commentResultMap">
+        SELECT * FROM t_kb_exampaper ORDER BY sort DESC LIMIT 0,1
+    </select>
+</mapper>

@@ -1,0 +1,137 @@
+#bottom-left {
+    float: left;
+    margin: 0 0 20px 0;
+}
+#bottom-right{
+    float: right;
+    margin: 0 0 20px 0;
+}
+.data-top {
+    width: 99%;
+    height: 40px;
+    border-bottom:1px solid black;
+    line-height: 40px;
+    background: #b3d4fd;
+    font-size: 14px;
+    font-weight:bold;
+    padding-left: 1%;
+}
+.button {
+    width: 50%;
+    margin-left: 18%;
+}
+.button input {
+    width: 100px;
+    margin-left: 20%;
+}
+.bottom_manage {
+    position: fixed;
+    z-index: 5;
+    display: none;
+    width: 5%;
+    margin-top: 32px;
+    margin-left: 90%;
+}
+.bottom_manage input {
+    width: 80px;
+}
+.comment-data {
+    width: 50%;
+    height: 620px;
+    border: 1px solid black;
+    margin-left: 20%;
+    margin-top: 90px;
+    position: fixed;
+    z-index: 5;
+    background: white;
+    display: none;
+}
+.add-body {
+    width: 80%;
+    height: 30%;
+    margin: 0px auto;
+    border-top:1px dashed grey;
+}
+.bottom {
+    padding-top: 5%;
+}
+/*.operation-delete-data {*/
+/*width: 500px;*/
+/*height: 300px;*/
+/*border: 1px solid black;*/
+/*margin-left: 30%;*/
+/*margin-top: 90px;*/
+/*position: fixed;*/
+/*z-index: 5;*/
+/*background: white;*/
+/*!*display: none;*!*/
+/*}*/
+.ibox-content {
+    min-height: 560px;
+}
+.screen {
+    width: 90%;
+    height: 110px;
+    margin-left: 5%;
+}
+.screen h1 {
+    font-size: 14px;
+    margin-top: 15%;
+}
+.screen input {
+    width: 70%;
+}
+.screen select {
+    width: 80%;
+    height: 30px;
+    border-radius: 5px;
+}
+.screen div {
+    width: 14%;
+    height: 100%;
+    float: left;
+}
+.operationBody {
+    border: 1px solid black;
+    background: white;
+    text-align: center;
+    font-size: 1vw;
+}
+.operationBody input, .operationBody select {
+    width: 100%;
+}
+.confirmButton {
+    width: 100%;
+    border: 1px solid grey;
+    border-radius: 5px;
+}
+.dataTopParent {
+    overflow: hidden;
+}
+img {
+    width: 100%;
+}
+/*更换select箭头样式*/
+select,#school .select2 {
+    /*很关键：将默认的select选择框样式清除*/
+    appearance:none;
+    -moz-appearance:none;
+    -webkit-appearance:none;
+
+    /*在选择框的最右侧中间显示小箭头图片*/
+    background: url("../img/changeBack.png") no-repeat scroll right center transparent;
+
+
+    /*为下拉小箭头留出一点位置，避免被文字覆盖*/
+    padding-right: 14px;
+}
+
+
+/*清除ie的默认选择框样式清除，隐藏下拉箭头*/
+select::-ms-expand { display: none; }
+#school .select2-selection__arrow {
+    display: none;
+}
+#school .select2-selection {
+    border: none;
+}

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title> - 数据表格</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="../../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+
+    <link href="../../css/animate.css" rel="stylesheet">
+    <link href="../../css/style.css?v=4.1.0" rel="stylesheet">
+
+    <script type="text/javascript" src="../../../js/jquery.js"></script>
+    <script type="text/javascript" src="user_info.js"></script>
+    <script type="text/javascript" src="../../js/getDate.js"></script>
+    <link rel="stylesheet" href="../../../css/page/easyhelper.min.css">
+    <script src="../../js/jquery-3.3.1.min.js"></script>
+    <!--<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"></script>-->
+    <script src="../../../js/page/jquery.transit.min.js"></script>
+    <script src="../../../js/page/es6-shim.min.js"></script>
+    <script src="../../../js/page/easyhelper.min.js"></script>
+    <script src="../../../js/page/comment.js"></script>
+    <script type="text/javascript" src="../../../js/layer-v3.0.3/layer/layer.js"></script>
+    <link rel="stylesheet" href="../../../css/comment.css">
+    <style>
+        #add-role select {
+            width: 200px;
+            height: 90%;
+        }
+        .delete-button input {
+            margin-left: 10%;
+        }
+        .operation-data {
+            width: 500px;
+            height: 350px;
+            border: 1px solid black;
+            margin-left: 30%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 5;
+            background: white;
+            display: none;
+        }
+        .role-body {
+            margin: 20px;
+            height: 55%;
+        }
+        .data-button {
+            width: 68%;
+            margin-left: 15%;
+            /*margin-top: 6%;*/
+        }
+        .data-button input {
+            margin-left: 10%;
+        }
+        .role-body-left {
+            float: left;
+        }
+        .role-body-right {
+            font-size: 16px;
+            margin-left: 220px;
+        }
+        .screen div {
+            width: 10%;
+        }
+        #robot {
+            position: fixed;
+            top: 80px;
+            z-index: 101;
+            display: none;
+        }
+        .btn {
+            width: 100%;
+            border: 1px solid grey;
+            border-radius: 5px;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+<div class="container unified-closed" id="robot">
+    <div class="row">
+        <div class="col-4 offset-4">
+            <div class="form-row">
+                <div class="col-12" style="background: white;border: 1px solid black">
+                    <div class="form-row">
+                        <div class="data-top">生成机器人</div>
+                    </div>
+                    <div class="form-row" style="margin-top: 40px">
+                        <div class="col-3 offset-1">
+                            <label class="col-form-label">机器人数量</label>
+                        </div>
+                        <div class="col-6">
+                            <input name="robotNum" class="form-control" type="text" oninput = "value=value.replace(/[^\d]/g,'')" style="width: 100%">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-10 offset-1" style="margin-bottom: 20px;margin-top: 40px">
+                            <div class="form-row">
+                                <div class="col-3 offset-1">
+                                    <button class="btn" id="confirm">确定</button>
+                                </div>
+                                <div class="col-3 offset-2">
+                                    <button class="btn cancel">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="operation-data">
+        <div class="data-top">设置用户状态</div>
+        <div class="role-body">
+            <div class="role-body-left">
+                <img src="" style="width: 160px;height: 160px">
+            </div>
+            <div class="role-body-right">
+                昵称：<span></span><br/>
+                电话：<span></span><br/>
+                性别：<span></span><br/>
+                编号：<span></span><br/>
+                状态：
+                <input type="radio" name="status" value="1"/>有效
+                <input type="radio" name="status" value="0"/>无效
+            </div>
+        </div>
+        <div class="button data-button">
+            <input class="status_confirm" type="button" value="确定"/>
+            <input class="cancel" type="button" value="取消"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>用户信息列表
+                        <!--<small>分类，查找</small>-->
+                    </h5>
+                    <div class="ibox-tools">
+                        <input id="userId" type="hidden" th:value="${msUserId}">
+                        <input id="resourceId" type="hidden" th:value="${msResourceId}"/>
+                        <input id="URL" type="hidden" th:value="${URL}"/>
+                    </div>
+                </div>
+                <div class="screen" style="margin-left: 4%;width: 95%;">
+                    <div>
+                        <h1>用户昵称</h1>
+                        <input id="name" type="text"/>
+                    </div>
+                    <div>
+                        <h1>手机号</h1>
+                        <input id="phone" oninput = "value=value.replace(/[^\d]/g,'')" maxlength="11" type="text"/>
+                    </div>
+                    <div>
+                        <h1>用户编号</h1>
+                        <input id="no" type="text" oninput = "value=value.replace(/[^\d]/g,'')"/>
+                    </div>
+                    <div>
+                        <h1>性别</h1>
+                        <select id="sex">
+                            <option value="">--请选择--</option>
+                            <option value="0">男</option>
+                            <option value="1">女</option>
+                        </select>
+                    </div>
+                    <div>
+                        <h1>所在省份</h1>
+                        <select id="province">
+                            <option value="">--请选择--</option>
+                        </select>
+                    </div>
+                    <div>
+                        <h1>所在城市</h1>
+                        <select id="city">
+                            <option value="">--请选择--</option>
+                        </select>
+                    </div>
+                    <div>
+                        <h1>状态</h1>
+                        <select id="status">
+                            <option value="">--请选择--</option>
+                            <option value="1">正常</option>
+                            <option value="0">无效</option>
+                        </select>
+                    </div>
+                    <div>
+                        <h1>照片审核</h1>
+                        <select id="imageStatus">
+                            <option value="">--请选择--</option>
+                            <option value="1">审核通过</option>
+                            <option value="0">审核中</option>
+                            <option value="-1">审核不通过</option>
+                        </select>
+                    </div>
+                    <div>
+                        <h1>实名认证</h1>
+                        <select id="idVerifyStatus">
+                            <option value="">--请选择--</option>
+                            <option value="-1">未实名认证</option>
+                            <option value="0">实名认证审核中</option>
+                            <option value="1">已实名认证</option>
+                            <option value="-2">实名认证失败</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div id="bottom-left">
+                        <!--<input id="add" type="button" value="新增">-->
+                        <!--<input type="button" value="编辑">-->
+                        <!--<input type="button" value="管理">-->
+                    </div>
+                    <!--<div class="manage_date">-->
+                        <!--&lt;!&ndash;<input type="button" value="管理">&ndash;&gt;-->
+                    <!--</div>-->
+                    <div id="bottom-right">
+                        <!--<input type="button" value="筛选">-->
+                        <!--<input type="button" value="刷新">-->
+                    </div>
+                    <div class="bottom_manage">
+                        <!--<input type="button" value="重置密码"/>-->
+                        <!--<br/>-->
+                        <!--<input type="button" value="关联角色"/>-->
+                    </div>
+                    <!--<div class="button-left">新增</div>-->
+                    <!--<div class="button-left">编辑</div>-->
+                    <!--<div class="button-left">筛选</div>-->
+                    <!--<div id="screen" class="button-right">筛选</div>-->
+                    <!--<div class="button-right">刷新</div>-->
+                    <!--<div class="button-right">管理</div>-->
+                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox" id="checkAll"></th>
+                            <th>用户头像</th>
+                            <th>手机号码</th>
+                            <th>用户昵称</th>
+                            <th>用户编号</th>
+                            <th>性别</th>
+                            <th>年龄</th>
+                            <th>所在城市</th>
+                            <th>创建时间</th>
+                            <th>状态</th>
+                            <th>审核照片状态</th>
+                            <th>实名认证状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="admin">
+                        </tbody>
+                    </table>
+                    <!--<div class="content">-->
+                        <!--<ul>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                    <div class="page" id="page" style="text-align:center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="../../js/jquery.min.js?v=2.1.4"></script>
+<script src="../../js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<script src="../../js/plugins/jeditable/jquery.jeditable.js"></script>
+
+<!-- 自定义js -->
+<script src="../../js/content.js?v=1.0.0"></script>
+
+
+</body>
+
+</html>

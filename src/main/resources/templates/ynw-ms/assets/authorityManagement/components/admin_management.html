@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title> - 数据表格</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="../../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+
+    <link href="../../css/animate.css" rel="stylesheet">
+    <link href="../../css/style.css?v=4.1.0" rel="stylesheet">
+
+    <script type="text/javascript" src="../../../js/jquery.js"></script>
+    <script type="text/javascript" src="admin.js"></script>
+    <script type="text/javascript" src="getDate.js"></script>
+    <link rel="stylesheet" href="../../../css/page/easyhelper.min.css">
+    <!--<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"></script>-->
+    <script src="../../js/jquery-3.3.1.min.js"></script>
+    <script src="../../../js/page/jquery.transit.min.js"></script>
+    <script src="../../../js/page/es6-shim.min.js"></script>
+    <script src="../../../js/page/easyhelper.min.js"></script>
+    <script src="../../../js/page/comment.js"></script>
+    <script type="text/javascript" src="../../../js/layer-v3.0.3/layer/layer.js"></script>
+    <link rel="stylesheet" href="../../../css/comment.css">
+    <style>
+        #update-data{
+            width: 50%;
+            height: 450px;
+            border: 1px solid black;
+            margin-left: 20%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 5;
+            background: white;
+            display: none;
+        }
+        .update-body {
+            width: 80%;
+            height: 45%;
+            margin: 0px auto;
+            border-top:1px dashed grey;
+        }
+        .particulars {
+            float: left;
+            width: 40%;
+            height: 80%;
+            margin-left: 5%;
+        }
+        .particulars div {
+            width: 100%;
+            height: 25%;
+            margin-top: 7%;
+        }
+        .particulars span {
+            font-size: 0.8vw;
+        }
+        .particulars input {
+            width: 50%;
+            height: 80%;
+            float: right;
+        }
+        .select-date {
+            width: 57%;
+            height: 80%;
+            float: right;
+            border-radius: 5px
+        }
+        .add-body-span-role {
+            margin-top: 5%;
+            margin-left: 20%;
+        }
+        #add-role {
+            margin-left: 28%;
+            width: 50%;
+            height: 60%;
+        }
+        #add-role select {
+            width: 80%;
+            height: 90%;
+        }
+        #delete-data {
+            width: 40%;
+            height: 420px;
+            border: 1px solid black;
+            margin-left: 20%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 5;
+            background: white;
+            display: none;
+        }
+        .delete-button {
+            width: 68%;
+            margin-left: 15%;
+            margin-top: 8%;
+        }
+        .delete-button input {
+            margin-left: 10%;
+        }
+        .delete-body {
+            margin: 10% 25%;
+            font-size: 18px;
+            font-weight:bold;
+        }
+        #nowPage-date,#userAndRole-date {
+            width: 500px;
+            height: 300px;
+            border: 1px solid black;
+            margin-left: 30%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 5;
+            background: white;
+            display: none;
+        }
+        .nowPage-body {
+            text-align: center;
+            padding: 20px;
+            width: 91%;
+            height: 100px;
+            font-size: 18px;
+        }
+        .user-role-body {
+            padding-top: 20px;
+            padding-left: 80px;
+            width: 91%;
+            height: 100px;
+            font-size: 18px;
+        }
+        .button {
+            margin-top: 12%;
+            height: 20%;
+            width: 80%;
+        }
+        .button input {
+            width: 20%;
+            height: 80%;
+            margin-left: 10%;
+        }
+        #userAndRole-date input{
+            height: 50%;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div id="userAndRole-date" class="operation-data">
+        <div class="data-top">账户关联角色</div>
+        <div class="user-role-body">
+            账户:【<span></span>】<br/>
+            角色：<br/>
+            <select size="5" style="width: 200px;height: 80%;margin-left: 10%">
+                <option></option>
+            </select>
+        </div>
+        <div class="button delete-button" style="margin-top: 15%">
+            <input id="user-role-confirm" type="button" value="确定"/>
+            <input class="cancel" type="button" value="取消"/>
+        </div>
+    </div>
+    <div id="nowPage-date">
+        <div class="data-top">提示</div>
+        <div>
+            <div class="nowPage-body">账户【<span></span>】的登录密码已重置为【123456】，请及时通知该用户登录并修改密码！</div>
+            <div class="button delete-button" style="margin-left: 30%">
+                <input class="cancel" type="button" value="关闭"/>
+            </div>
+        </div>
+    </div>
+    <div id="delete-data" class="operation-data">
+        <div class="data-top">删除用户</div>
+        <div class="update-body">
+            <div class="delete-body">确定要删除用户【<span></span>】吗？</div>
+        </div>
+        <div class="update-body bottom">
+            <div class="button delete-button">
+                <input id="delete-confirm" type="button" value="确定"/>
+                <input class="cancel" type="button" value="取消"/>
+            </div>
+        </div>
+    </div>
+    <div id="update-data" class="operation-data">
+        <div class="data-top">编辑用户</div>
+        <div id="update-data-comment" class="update-body">
+            <div class="particulars">
+                <div><span > * 用户账号：</span><input id="update-name" type="text" onkeyup="this.value=this.value.replace(/[^\w_]/g,'');"
+                                                    onkeydown="changeEnter(event,8)" placeholder="输入大小写字母、数字、下划线"/></div>
+                <div><span> * 真实姓名：</span><input id="update-realName" type="text"  onkeydown="changeEnter(event,10)"/></div>
+                <div>
+                    <span > * 性别：</span>
+                    <select class="select-date" id="update-sex" onkeydown="changeEnter(event,12)">
+                        <option value="">--请选择--</option>
+                        <option value="0">男</option>
+                        <option value="1">女</option>
+                    </select>
+                </div>
+            </div>
+            <div class="particulars">
+                <div><span> * 用户密码：</span><input id="update-password" type="password" onkeydown="changeEnter(event,9)"/></div>
+                <div><span> * 手机号码：</span><input id="update-phone" type="text" oninput = "value=value.replace(/[^\d]/g,'')" maxlength="11" onkeydown="changeEnter(event,11)"/></div>
+                <div><span>邮箱：</span><input id="update-email" type="text" onkeydown="changeEnter(event,13)"/></div>
+            </div>
+        </div>
+        <div class="update-body">
+            <div class="button">
+                <input id="update-confirm" type="button" value="确定"/>
+                <input class="cancel" type="button" value="取消"/>
+            </div>
+        </div>
+    </div>
+    <div id="add-date" class="comment-data">
+        <div class="data-top">新增用户</div>
+        <div id="add-data-comment" class="add-body initialize">
+            <div class="particulars">
+               <div><span> * 用户账号：</span><input id="add-name" type="text" style="margin-left: 15px"
+                                                  onkeyup="this.value=this.value.replace(/[^\w_]/g,'');"
+                                                  onkeydown="changeEnter(event,1)" placeholder="输入大小写字母、数字、下划线"/></div>
+                <div><span> * 真实姓名：</span><input id="realName" type="text" onkeydown="changeEnter(event,3)"/></div>
+                <div>
+                    <span> * 性别：</span>
+                    <select class="select-date" id="sex" onkeydown="changeEnter(event,5)">
+                        <option value="">--请选择--</option>
+                        <option value="0">男</option>
+                        <option value="1">女</option>
+                    </select>
+                </div>
+            </div>
+            <div class="particulars">
+                <div><span> * 用户密码：</span><input id="password" type="password" onkeydown="changeEnter(event,2)"/></div>
+                <div><span> * 手机号码：</span>
+                    <input id="phone" type="text" oninput = "value=value.replace(/[^\d]/g,'')" maxlength="11" onkeydown="changeEnter(event,4)"/>
+                </div>
+                <div><span>邮箱：</span><input id="email" type="text" onkeydown="changeEnter(event,6)"/></div>
+            </div>
+        </div>
+        <div class="add-body initialize">
+            <div class="add-body-span-role"><span>关联角色:</span></div>
+            <div id="add-role" >
+                <select size="5" onkeydown="changeEnter(event,7)">
+                    <option></option>
+                </select>
+            </div>
+        </div>
+        <div class="add-body">
+            <div class="button">
+                <input id="add-confirm" type="button" value="确定"/>
+                <input class="cancel" type="button" value="取消"/>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>用户列表
+                        <!--<small>分类，查找</small>-->
+                    </h5>
+                    <div class="ibox-tools">
+                        <input id="userId" type="hidden" th:value="${msUserId}">
+                        <input id="resourceId" type="hidden" th:value="${msResourceId}"/>
+                    </div>
+                </div>
+                <div class="screen">
+                    <div>
+                        <h1>用户名</h1>
+                        <input id="name" type="text" />
+                    </div>
+                    <div>
+                        <h1>所属角色</h1>
+                        <select id="role">
+                            <option value="">--请选择--</option>
+                        </select>
+                    </div>
+                    <div>
+                        <h1>电话</h1>
+                        <input id="phoneNumber" oninput = "value=value.replace(/[^\d]/g,'')" maxlength="11" type="text"/>
+                    </div>
+                    <div>
+                        <h1>状态</h1>
+                        <select id="status">
+                            <option value="">--请选择--</option>
+                            <option value="1">正常</option>
+                            <option value="0">无效</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div id="bottom-left">
+                        <!--<input id="add" type="button" value="新增">-->
+                        <!--<input type="button" value="编辑">-->
+                        <!--<input type="button" value="管理">-->
+                    </div>
+                    <!--<div class="manage_date">-->
+                        <!--&lt;!&ndash;<input type="button" value="管理">&ndash;&gt;-->
+                    <!--</div>-->
+                    <div id="bottom-right">
+                        <!--<input type="button" value="筛选">-->
+                        <!--<input type="button" value="刷新">-->
+                    </div>
+                    <div class="bottom_manage">
+                        <!--<input type="button" value="重置密码"/>-->
+                        <!--<br/>-->
+                        <!--<input type="button" value="关联角色"/>-->
+                    </div>
+                    <!--<div class="button-left">新增</div>-->
+                    <!--<div class="button-left">编辑</div>-->
+                    <!--<div class="button-left">筛选</div>-->
+                    <!--<div id="screen" class="button-right">筛选</div>-->
+                    <!--<div class="button-right">刷新</div>-->
+                    <!--<div class="button-right">管理</div>-->
+                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox" id="checkAll"></th>
+                            <th>用户名</th>
+                            <th>所属角色</th>
+                            <th>电话</th>
+                            <th>昵称</th>
+                            <th>性别</th>
+                            <th>邮箱</th>
+                            <th>创建时间</th>
+                            <th>状态</th>
+                        </tr>
+                        </thead>
+                        <tbody id="admin">
+                        </tbody>
+                    </table>
+                    <!--<div class="content">-->
+                        <!--<ul>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                    <div class="page" id="page" style="text-align:center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="../../js/jquery.min.js?v=2.1.4"></script>
+<script src="../../js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<script src="../../js/plugins/jeditable/jquery.jeditable.js"></script>
+
+<!-- 自定义js -->
+<script src="../../js/content.js?v=1.0.0"></script>
+
+
+</body>
+
+</html>

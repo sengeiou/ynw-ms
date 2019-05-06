@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.ResourceMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Resource">
+        <id column="ms_resource_id" property="msResourceId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="describe" property="describe"/>
+        <result column="is_hide" property="isHide"/>
+        <result column="level" property="level"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+        <result column="source_key" property="sourceKey"/>
+        <result column="source_url" property="sourceUrl"/>
+        <result column="type" property="type"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="parent_id" property="parentId"/>
+    </resultMap>
+    <resultMap id="resourceResultMap" type="com.ynw.system.entity.Resource" extends="commentResultMap">
+        <association property="parentName" column="parent_id" select="selectParentName"/>
+    </resultMap>
+    <select id="selectParentName" resultType="java.lang.String">
+      SELECT mr.name FROM t_ms_resource mr WHERE mr.ms_resource_id=#{parent_id}
+    </select>
+    <resultMap id="relevanceResourceResultMap" type="com.ynw.system.entity.Resource" extends="commentResultMap">
+        <association property="resourceList" javaType="com.ynw.system.entity.Resource">
+        <id column="one_ms_resource_id" property="msResourceId"/>
+        <result column="one_name" property="name"/>
+        <result column="one_description" property="describe"/>
+            <association property="resourceList" javaType="com.ynw.system.entity.Resource">
+                <id column="two_ms_resource_id" property="msResourceId"/>
+                <result column="two_description" property="describe"/>
+                <association property="resourceList" javaType="com.ynw.system.entity.Resource">
+                    <id column="three_ms_resource_id" property="msResourceId"/>
+                    <result column="three_description" property="describe"/>
+                </association>
+            </association>
+        </association>
+    </resultMap>
+    <!--<select id="selectResourceOne" resultMap="commentResultMap">-->
+        <!--SELECT * FROM t_ms_resource WHERE parent_id=#{ms_resource_id}-->
+    <!--</select>-->
+    <!--<select id="selectResourceTwo" resultMap="commentResultMap">-->
+        <!--SELECT * FROM t_ms_resource WHERE parent_id=#{one_ms_resource_id}-->
+    <!--</select>-->
+
+    <sql id="commentSQL">
+        mr.ms_resource_id, mr.create_time, mr.describe, mr.is_hide, mr.level, mr.name, mr.sort, mr.source_key, mr.source_url, mr.type, mr.update_time, mr.parent_id
+    </sql>
+
+    <select id="relevanceFindResource" resultMap="relevanceResourceResultMap">
+        SELECT <include refid="commentSQL" />,one.ms_resource_id one_ms_resource_id,one.name one_name,two.ms_resource_id two_ms_resource_id,
+        two.describe two_description,three.ms_resource_id three_ms_resource_id,three.describe three_description
+        FROM t_ms_resource mr LEFT JOIN t_ms_resource one ON mr.ms_resource_id=one.parent_id LEFT JOIN t_ms_resource two
+        ON one.ms_resource_id=two.parent_id LEFT JOIN t_ms_resource three ON two.ms_resource_id=three.parent_id WHERE mr.parent_id IS NULL
+--         SELECT * FROM t_ms_resource WHERE parent_id IS NULL AND is_hide=1
+    </select>
+
+
+    <select id="findResourceByUserId" resultMap="commentResultMap">
+        SELECT <include refid="commentSQL" /> FROM t_ms_resource mr JOIN t_ms_role_resource mrs ON mr.ms_resource_id=mrs.ms_resource_id JOIN t_ms_user_role mur
+        ON mur.ms_role_id=mrs.ms_role_id WHERE mur.ms_user_id=#{msUserId} AND mr.is_hide=0
+    </select>
+    <select id="findAll" resultMap="commentResultMap">
+        SELECT * FROM t_ms_resource
+    </select>
+    <select id="conditionQueryResourceByUserId" resultMap="resourceResultMap">
+        SELECT <include refid="commentSQL" /> FROM t_ms_resource mr JOIN t_ms_role_resource mrs ON mr.ms_resource_id=mrs.ms_resource_id JOIN t_ms_user_role mur
+        ON mur.ms_role_id=mrs.ms_role_id
+        <where>
+            mur.ms_user_id=#{msUserId}
+            <if test="null != resource.level">
+                AND mr.level=#{resource.level}
+            </if>
+            <if test="null != resource.isHide">
+                AND mr.is_hide=#{resource.isHide}
+            </if>
+            <if test="null != resource.type">
+                AND mr.type=#{resource.type}
+            </if>
+            <if test="null != resource.parentId">
+                AND mr.parent_id=#{resource.parentId}
+            </if>
+        </where>
+        ORDER BY mr.sort ASC
+    </select>
+    <select id="conditionQueryResourceAll" resultMap="commentResultMap">
+        SELECT <include refid="commentSQL" /> FROM t_ms_resource mr
+        <where>
+            <if test="null != resource.name">
+                mr.name LIKE CONCAT('%',#{resource.name},'%')
+            </if>
+            <if test="null != resource.level">
+                AND mr.level LIKE CONCAT('%',#{resource.level},'%')
+            </if>
+            <if test="null != resource.isHide">
+                AND mr.isHide LIKE CONCAT('%',#{resource.isHide},'%')
+            </if>
+            <if test="null != resource.type">
+                AND mr.type LIKE CONCAT('%',#{resource.type},'%')
+            </if>
+        </where>
+        ORDER BY mr.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <!-- 统计符合条件的数据 -->
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(mr.ms_resource_id) FROM t_ms_resource mr
+        <where>
+            <if test="null != name">
+                mr.name LIKE CONCAT('%',#{name},'%')
+            </if>
+            <if test="null != level">
+                AND mr.level LIKE CONCAT('%',#{level},'%')
+            </if>
+            <if test="null != isHide">
+                AND mr.isHide LIKE CONCAT('%',#{isHide},'%')
+            </if>
+            <if test="null != type">
+                AND mr.type LIKE CONCAT('%',#{type},'%')
+            </if>
+        </where>
+    </select>
+    <select id="findResourceByRoleId" resultMap="commentResultMap">
+        SELECT <include refid="commentSQL" /> FROM t_ms_resource mr JOIN t_ms_role_resource mrs ON mr.ms_resource_id=mrs.ms_resource_id
+        WHERE mrs.ms_role_id=#{roleId} AND mr.is_hide=0
+    </select>
+    <select id="findByTypeLessThanOne" resultMap="commentResultMap">
+        SELECT * FROM  t_ms_resource mr WHERE mr.type <![CDATA[<= ]]> 1
+    </select>
+
+</mapper>

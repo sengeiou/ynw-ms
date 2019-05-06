@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.InterestMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Interest">
+        <id column="bd_interest_id" property="bdInterestId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+    </resultMap>
+
+    <select id="conditionQueryInterest" resultMap="commentResultMap">
+        SELECT * FROM t_bd_interest
+        <where>
+            <if test="null != interest.name">
+                name LIKE CONCAT('%',#{interest.name},'%')
+            </if>
+        </where>
+        ORDER BY sort ASC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(bd_interest_id) FROM t_bd_interest
+        <where>
+            <if test="null != name">
+                name LIKE CONCAT('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+    <select id="findBySortMax" resultMap="commentResultMap">
+        SELECT * FROM t_bd_interest ORDER BY sort DESC
+    </select>
+    <select id="findInterestByAcUserId" resultMap="commentResultMap">
+        SELECT * FROM t_bd_interest ter WHERE ter.bd_interest_id IN (SELECT ur.bd_interest_id FROM t_ac_u_interest_rel ur WHERE
+        ur.ac_user_id=#{acUserId}) ORDER BY ter.sort ASC
+    </select>
+</mapper>

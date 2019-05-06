@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.ProvinceMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Province">
+        <id column="bd_province_id" property="bdProvinceId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="province_name" property="provinceName"/>
+        <result column="sort" property="sort"/>
+    </resultMap>
+
+    <select id="conditionQueryProvince" resultMap="commentResultMap">
+        SELECT * FROM t_bd_province
+        ORDER BY sort ASC
+    </select>
+    <select id="findBySortMax" resultMap="commentResultMap">
+        SELECT * FROM t_bd_province ORDER BY sort DESC
+    </select>
+</mapper>

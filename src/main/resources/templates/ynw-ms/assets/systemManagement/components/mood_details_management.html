@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title> - 数据表格</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="../../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+
+    <link href="../../css/animate.css" rel="stylesheet">
+    <link href="../../css/style.css?v=4.1.0" rel="stylesheet">
+
+    <script type="text/javascript" src="../../../js/jquery.js"></script>
+    <script type="text/javascript" src="mood_details.js"></script>
+    <script type="text/javascript" src="../../js/getDate.js"></script>
+    <link rel="stylesheet" href="../../../css/page/easyhelper.min.css">
+    <!--<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"></script>-->
+    <script src="../../js/jquery-3.3.1.min.js"></script>
+    <script src="../../../js/page/jquery.transit.min.js"></script>
+    <script src="../../../js/page/es6-shim.min.js"></script>
+    <script src="../../../js/page/easyhelper.min.js"></script>
+    <script src="../../../js/page/comment.js"></script>
+    <script type="text/javascript" src="../../../js/layer-v3.0.3/layer/layer.js"></script>
+    <link rel="stylesheet" href="../../../css/comment.css">
+    <style>
+        .data-body {
+            width: 80%;
+            height: 500px;
+            border: 1px solid black;
+            margin-left: 10%;
+            margin-top: 60px;
+        }
+        .mood-comment-data {
+            width: 80%;
+            height: 200px;
+            border: 1px solid black;
+            margin-left: 10%;
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+        .data-left {
+            width: 18%;
+            height: 82%;
+            margin: 20px;
+            float: left;
+            text-align: center;
+            word-wrap: break-word
+        }
+        .data-left img {
+            width: 80%;
+            height: 50%;
+            margin: 5%;
+            object-fit: contain;
+        }
+        .data-right {
+            width: 75%;
+            height: 82%;
+            margin-top: 1%;
+            margin-left: 1%;
+            float: left;
+            font-size: 16px;
+        }
+        .data-right-top {
+            width: 100%;
+            height: 10%;
+            font-size: 1vm;
+        }
+        .data-right-top span{
+            background: orangered;
+            margin-top: 10%;
+            color: white;
+            margin-right: 2%;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        .data-right-body {
+            width: 100%;
+            height: 44%;
+            border-top: 1px dashed grey;
+        }
+        .data-right-body img {
+            width: 20%;
+            height: 80%;
+            margin-top: 4%;
+            margin-left: 4%;
+            object-fit: contain;
+        }
+        .mood-comment-body {
+            width: 90%;
+            height: 150px;
+            border-bottom: 1px dashed grey;
+            margin-left: 5%;
+        }
+        .mood-comment-body-left {
+            width: 10%;
+            height: 100%;
+            float: left;
+        }
+        .mood-comment-body-left img {
+            width: 80%;
+            height: 80%;
+            margin: 10%;
+            object-fit: contain;
+        }
+        .mood-comment-body-right {
+            float: left;
+            width: 80%;
+            height: 100%;
+        }
+        .body-right-up {
+            width: 100%;
+            height: 60%;
+            font-size: 18px;
+            line-height: 70px;
+        }
+        .body-right-up span{
+            color: orangered;
+        }
+        .body-right-down {
+            width: 100%;
+            height: 40%;
+            font-size: 14px;
+            color: darkgrey;
+        }
+        .operation-data {
+            width: 30%;
+            height: 290px;
+            border: 1px solid black;
+            margin-left: 35%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 105;
+            background: white;
+            display: none;
+        }
+        .data-button {
+            width: 70%;
+            margin-left: 15%;
+            margin-top: 8%;
+        }
+        .data-button input {
+            margin-left: 15%;
+            width: 15%;
+        }
+        .role-body {
+            margin: 8% 20%;
+        }
+        .role-body select {
+            margin: 18px;
+            width: 70%;
+            height: 30px;
+            border-radius: 5px;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+<div class="operation-data" id="idCardAudit">
+    <div class="data-top">删除举报话题原因</div>
+    <div class="role-body">
+        动态举报类型：
+        <select name="content">
+            <option value="">---请选择---</option>
+        </select>
+    </div>
+    <div class="button data-button">
+        <input id="id-card-confirm" type="button" value="确定"/>
+        <input class="cancel" type="button" value="取消"/>
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <input class="back" type="button" value="返回" style="width: 100px"/>
+    <input class="delete-target" type="button" value="删除被举报话题" style="width: 100px"/>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>
+                        <!--<small>分类，查找</small>-->
+                    </h5>
+                    <div class="ibox-tools">
+                        <input id="msResourceId" type="hidden" th:value="${msResourceId}">
+                        <input id="moodId" type="hidden" th:value="${moodId}">
+                        <input id="name" type="hidden" th:value="${name}">
+                        <input id="phone" type="hidden" th:value="${phone}">
+                        <input id="syReportCtgyId" type="hidden" th:value="${syReportCtgyId}">
+                        <input id="targetType" type="hidden" th:value="${targetType}">
+                        <input id="status" type="hidden" th:value="${status}">
+                        <input id="num" type="hidden" th:value="${num}">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="table_data_tables.html#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="table_data_tables.html#">选项1</a>
+                            </li>
+                            <li><a href="table_data_tables.html#">选项2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="data-body">
+                    <div class="data-top">话题内容</div>
+                    <div class="data-left">
+                        <!--<img src="../../img/a8.jpg">-->
+                        <!--<h4>总有刁民想害朕总有刁民想害朕总有刁民想害朕总有刁民想害朕</h4>-->
+                        <!--13526569863-->
+                    </div>
+                    <div class="data-right">
+                        <div class="data-right-top">
+                            <!--<span>动漫&二次元</span><span>动漫&二次元</span>2018-11-30 10:48:23-->
+                        </div>
+                        <div class="data-right-body" id="data-right-body-content">
+                            <!--afsdfasdfasdfasdfasdddddddddddddddddddddddddddddddddddddddddd-->
+                        </div>
+                        <div class="data-right-body" id="data-right-body-img">
+                            <!--<img src="../../img/a8.jpg">-->
+                            <!--<img src="../../img/a8.jpg">-->
+                            <!--<img src="../../img/a8.jpg">-->
+                            <!--<img src="../../img/a8.jpg">-->
+                        </div>
+                    </div>
+                </div>
+                <div class="mood-comment-data">
+                    <!--<div class="data-top">话题评论</div>-->
+                    <!--<div class="mood-comment-body">-->
+                        <!--<div class="mood-comment-body-left">-->
+                            <!--<img src="../../img/a8.jpg">-->
+                        <!--</div>-->
+                        <!--<div class="mood-comment-body-right">-->
+                            <!--<div class="body-right-up">-->
+                                <!--<span>鬼未言</span>：葫芦娃有几个女朋友-->
+                            <!--</div>-->
+                            <!--<div class="body-right-down">-->
+                                <!--11月15日 21:28-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="../../js/jquery.min.js?v=2.1.4"></script>
+<script src="../../js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<script src="../../js/plugins/jeditable/jquery.jeditable.js"></script>
+
+<!-- 自定义js -->
+<script src="../../js/content.js?v=1.0.0"></script>
+
+
+</body>
+
+</html>

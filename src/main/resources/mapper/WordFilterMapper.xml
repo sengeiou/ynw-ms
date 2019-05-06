@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.WordFilterMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.WordFilter">
+        <id column="sy_wordfilter_id" property="syWordfilterId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="category" property="category"/>
+        <result column="word" property="word"/>
+        <result column="status" property="status"/>
+        <association property="categoryName" column="category" select="selectCategoryName"/>
+    </resultMap>
+    <select id="selectCategoryName" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{visitor_os_type}
+    </select>
+    <select id="conditionQueryWordFilter" resultMap="commentResultMap">
+        SELECT * FROM t_sy_wordfilter
+        <where>
+            <if test="null != wordFilter.word">
+                word LIKE CONCAT('%',#{wordFilter.word},'%')
+            </if>
+            <if test="null != wordFilter.category">
+                AND category LIKE CONCAT('%',#{wordFilter.category},'%')
+            </if>
+        </where>
+        ORDER BY create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(sy_wordfilter_id) FROM t_sy_wordfilter
+        <where>
+            <if test="null != word">
+                word LIKE CONCAT('%',#{word},'%')
+            </if>
+            <if test="null != category">
+                AND category LIKE CONCAT('%',#{category},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

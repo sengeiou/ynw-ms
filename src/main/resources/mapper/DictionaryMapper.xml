@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.DictionaryMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Dictionary">
+        <id column="sy_dictionary_id" property="syDictionaryId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="group_key" property="groupKey"/>
+        <result column="group_desc" property="groupDesc"/>
+        <result column="item_key" property="itemKey"/>
+        <result column="item_value" property="itemValue"/>
+        <result column="describe" property="describe"/>
+        <result column="sort" property="sort"/>
+    </resultMap>
+    <select id="findDictionaryByGroupKey" resultMap="commentResultMap">
+        SELECT * FROM t_sy_dictionary WHERE group_key=#{groupKey}
+    </select>
+    <select id="conditionQueryDictionary" resultMap="commentResultMap">
+        SELECT * FROM t_sy_dictionary
+        <where>
+            <if test="null != dictionary.groupKey">
+                group_key LIKE CONCAT('%',#{dictionary.groupKey},'%')
+            </if>
+        </where>
+        ORDER BY group_key DESC LIMIT #{start},#{pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(sy_dictionary_id) FROM t_sy_dictionary
+        <where>
+            <if test="null != groupKey">
+                group_key LIKE CONCAT('%',#{groupKey},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="findDictionaryByGroupKy" resultMap="commentResultMap">
+        SELECT * FROM t_sy_dictionary sy WHERE sy.sy_dictionary_id IN (SELECT MAX(ds.sy_dictionary_id) FROM t_sy_dictionary ds GROUP BY ds.group_key)
+    </select>
+
+</mapper>

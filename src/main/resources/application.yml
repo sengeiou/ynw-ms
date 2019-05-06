@@ -1,0 +1,40 @@
+server:
+#  port: 8082
+  tomcat:
+    uri-encoding: UTF-8
+#  servlet:
+#    context-path: /ynw-ms  #访问路径前缀
+spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+  datasource:
+    sql-script-encoding: UTF-8
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: DatabookHikarCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+  #thymeleaf����
+  thymeleaf:
+    mode: HTML
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+  mvc:
+    date-format: yyyy-MM-dd
+mybatis:
+  type-aliases-package: com.ynw.system.entity
+  mapper-locations: classpath:mapper/*.xml
+mapper:
+  mappers: com.ynw.system.util.MyMapper
+logging:
+  #  config: classpath:logback-core.xml
+  level:
+    com:
+      ynw:
+        system:
+          dao: info

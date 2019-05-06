@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.LoveMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Love">
+        <id column="ac_bean_flow_id" property="acBeanFlowId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="ac_user_id" property="acUserId"/>
+        <result column="quantity" property="quantity"/>
+        <result column="type" property="type"/>
+        <result column="asso_business_key" property="assoBusinessKey"/>
+        <result column="asso_business_id" property="assoBusinessId"/>
+        <association property="assoBusinessName" column="asso_business_key" select="selectBusinessValue"/>
+        <association property="acUserName" column="ac_user_id" select="selectUserName"/>
+        <association property="acUserPhone" column="ac_user_id" select="selectUserPhone"/>
+        <association property="acUserImg" column="ac_user_id" select="selectUserImg"/>
+    </resultMap>
+
+    <select id="selectUserImg" resultType="java.lang.String">
+      SELECT head_image_url FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserPhone" resultType="java.lang.String">
+      SELECT phone_number FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserName" resultType="java.lang.String">
+      SELECT nickname FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectBusinessValue" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{asso_business_key}
+    </select>
+
+
+    <select id="conditionQueryLove" resultMap="commentResultMap">
+        SELECT * FROM t_ac_bean_flow bf
+        <where>
+            <if test="null != love.acUserPhone">
+                bf.ac_user_id IN (SELECT au.ac_user_id FROM t_ac_user au WHERE au.phone_number LIKE CONCAT('%',#{love.acUserPhone},'%'))
+            </if>
+            <if test="null != love.type">
+                AND bf.type LIKE CONCAT('%',#{love.type},'%')
+            </if>
+            <if test="null != love.assoBusinessKey">
+                AND bf.asso_business_key LIKE CONCAT('%',#{love.assoBusinessKey},'%')
+            </if>
+            <if test="null != beginDate">
+                AND bf.create_time > #{beginDate}
+            </if>
+            <if test="null != endDate">
+                AND bf.create_time <![CDATA[< ]]> #{endDate}
+            </if>
+        </where>
+        ORDER BY bf.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(bf.ac_bean_flow_id) FROM t_ac_bean_flow bf
+        <where>
+            <if test="null != love.acUserPhone">
+                bf.ac_user_id IN (SELECT au.ac_user_id FROM t_ac_user au WHERE au.phone_number LIKE CONCAT('%',#{love.acUserPhone},'%'))
+            </if>
+            <if test="null != love.type">
+                AND bf.type LIKE CONCAT('%',#{love.type},'%')
+            </if>
+            <if test="null != love.assoBusinessKey">
+                AND bf.asso_business_key LIKE CONCAT('%',#{love.assoBusinessKey},'%')
+            </if>
+            <if test="null != beginDate">
+                AND bf.create_time > #{beginDate}
+            </if>
+            <if test="null != endDate">
+                AND bf.create_time <![CDATA[< ]]> #{endDate}
+            </if>
+        </where>
+    </select>
+    <select id="nowCountGrant" resultType="java.lang.Integer">
+        SELECT SUM(quantity) FROM t_ac_bean_flow WHERE create_time LIKE CONCAT('%',#{nowTime},'%')
+        AND type=1 AND asso_business_key!='BBT_MOOD_REWARD'
+    </select>
+    <select id="nowCountRecycle" resultType="java.lang.Integer">
+        SELECT SUM(quantity) FROM t_ac_bean_flow WHERE create_time LIKE CONCAT('%',#{nowTime},'%')
+        AND type=0 AND asso_business_key!='BBT_REWARD_MOOD'
+    </select>
+    <select id="nowCountTransfer" resultType="java.lang.Integer">
+        SELECT SUM(quantity) FROM t_ac_bean_flow WHERE create_time LIKE CONCAT('%',#{nowTime},'%')
+        AND (asso_business_key='BBT_REWARD_MOOD' OR asso_business_key='BBT_ACCEPT_FRIEND_NOTICE')
+    </select>
+    <!--<select id="findLoveQuantitySum" resultType="int">-->
+        <!--SELECT SUM(fb.quantity) FROM t_ac_bean_flow fb-->
+        <!--<where>-->
+            <!---->
+            <!--<if test="null != type">-->
+                <!--fb.type LIKE CONCAT('%',#{type},'%')-->
+            <!--</if>-->
+        <!--</where>-->
+    <!--</select>-->
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.RadarSubjectItemMapper">
+    <resultMap id="generalDutyResultMap" type="com.ynw.system.entity.RadarSubjectItem">
+        <id column="rs_subject_item_id" property="rsSubjectItemId"/>
+        <result column="rs_subject_id" property="rsSubjectId"/>
+        <result column="content" property="content"/>
+        <result property="sort" column="sort"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="findAllBySubjectId" resultMap="generalDutyResultMap">
+      SELECT * FROM t_rs_subject_item WHERE rs_subject_id=#{subjectId} ORDER BY `sort` ASC
+    </select>
+
+    <select id="findBySortMax" resultMap="generalDutyResultMap">
+        SELECT * FROM t_rs_subject_item WHERE rs_subject_id=#{subjectId}
+        ORDER BY `sort` DESC
+    </select>
+</mapper>

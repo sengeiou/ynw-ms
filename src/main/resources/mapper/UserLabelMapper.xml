@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.AcUserLabelMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.AcUserLabel">
+        <id column="ac_label_id" property="acLabelId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+        <result column="ac_label_ctgy_id" property="acLabelCtgyId"/>
+    </resultMap>
+
+    <resultMap id="userLabelResultMap" type="com.ynw.system.entity.AcUserLabel" extends="commentResultMap">
+        <association property="acLabelClassifyName" column="ac_label_ctgy_id" select="selectClassifyName"/>
+    </resultMap>
+
+    <select id="selectClassifyName" resultType="java.lang.String">
+        SELECT `name` FROM t_ac_label_ctgy WHERE ac_label_ctgy_id=#{ac_label_ctgy_id}
+    </select>
+
+    <select id="findAllByUserId" resultMap="userLabelResultMap">
+        SELECT * FROM t_ac_label WHERE ac_label_id IN (SELECT ac_label_id FROM t_ac_u_label_rel WHERE ac_user_id=#{suerId})
+    </select>
+
+    <select id="conditionQueryAcUserLabel" resultMap="userLabelResultMap">
+        SELECT * FROM t_ac_label
+        <where>
+            <if test="null != label.name">
+                `name` LIKE CONCAT('%',#{label.name},'%')
+            </if>
+            <if test="null != label.acLabelCtgyId">
+                AND ac_label_ctgy_id LIKE CONCAT('%',#{label.acLabelCtgyId},'%')
+            </if>
+        </where>
+        ORDER BY sort ASC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(ac_label_id) FROM t_ac_label
+        <where>
+            <if test="null != name">
+                `name` LIKE CONCAT('%',#{name},'%')
+            </if>
+            <if test="null != acLabelCtgyId">
+                AND ac_label_ctgy_id LIKE CONCAT('%',#{acLabelCtgyId},'%')
+            </if>
+        </where>
+    </select>
+    <select id="findBySortMax" resultMap="commentResultMap">
+        SELECT * FROM t_ac_label WHERE ac_label_ctgy_id=#{labelClassifyId} ORDER BY `sort` DESC
+    </select>
+    <!--<select id="findInterestByAcUserId" resultMap="commentResultMap">-->
+        <!--SELECT * FROM t_bd_interest ter WHERE ter.bd_interest_id IN (SELECT ur.bd_interest_id FROM t_ac_u_interest_rel ur WHERE-->
+        <!--ur.ac_user_id=#{acUserId}) ORDER BY ter.sort ASC-->
+    <!--</select>-->
+</mapper>

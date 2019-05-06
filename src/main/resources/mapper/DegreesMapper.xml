@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.DegreesMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Degrees">
+        <id column="bd_degrees_id" property="bdDegreesId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+    </resultMap>
+
+    <select id="conditionQueryDegrees" resultMap="commentResultMap">
+        SELECT * FROM t_bd_degrees
+        <where>
+            <if test="null != degrees.name">
+                name LIKE CONCAT('%',#{degrees.name},'%')
+            </if>
+        </where>
+        ORDER BY sort ASC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(bd_degrees_id) FROM t_bd_degrees
+        <where>
+            <if test="null != name">
+                name LIKE CONCAT('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+    <select id="findBySortMax" resultMap="commentResultMap">
+        SELECT * FROM t_bd_degrees ORDER BY sort DESC
+    </select>
+</mapper>

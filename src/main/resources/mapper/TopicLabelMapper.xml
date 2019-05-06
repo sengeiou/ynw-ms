@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.TopicLabelMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.TopicLabel">
+        <id column="ds_label_id" property="dsLabelId"/>
+        <result column="is_emphasized" property="isEmphasized"/>
+        <result column="is_hidden" property="isHidden"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="commentResultMap">
+        SELECT * FROM t_ds_label WHERE is_hidden = 0 ORDER BY sort ASC
+    </select>
+    <select id="findBySortMax" resultMap="commentResultMap">
+        SELECT * FROM t_ds_label ORDER BY sort DESC
+    </select>
+
+    <update id="update">
+        UPDATE t_ds_label
+        <set>
+            <if test="null != isEmphasized">
+                is_emphasized = #{isEmphasized},
+            </if>
+            <if test="null != isHidden">
+                is_hidden = #{isHidden},
+            </if>
+            <if test="null != name">
+                `name` = #{name},
+            </if>
+        </set>
+        WHERE ds_label_id = #{dsLabelId}
+    </update>
+</mapper>

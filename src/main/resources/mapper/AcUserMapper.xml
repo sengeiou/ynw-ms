@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.AcUserMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.AcUser">
+        <id column="ac_user_id" property="acUserId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="no" property="no"/>
+        <result column="nickname" property="nickname"/>
+        <result column="real_name" property="realName"/>
+        <result column="id_number" property="idNumber"/>
+        <result column="id_image_front_url" property="idImageFrontUrl"/>
+        <result column="id_image_back_url" property="idImageBackUrl"/>
+        <result column="id_verify_status" property="idVerifyStatus"/>
+
+        <result column="sex" property="sex"/>
+        <result column="birthday" property="birthday"/>
+        <result column="age" property="age"/>
+        <result column="zodiac" property="zodiac"/>
+        <result column="bd_business_id" property="bdBusinessId"/>
+        <result column="bd_university_id" property="bdUniversityId"/>
+        <result column="bd_degrees_id" property="bdDegreesId"/>
+        <result column="signature" property="signature"/>
+        <result column="head_image_url" property="headImageUrl"/>
+        <result column="phone_number" property="phoneNumber"/>
+        <result column="hometown" property="hometown"/>
+        <result column="bd_city_id" property="bdCityId"/>
+        <result column="status" property="status"/>
+        <result column="referrer_id" property="referrerId"/>
+        <result column="referral_code" property="referralCode"/>
+        <association property="zodiacName" column="zodiac" select="selectZodiacName"/>
+        <association property="bdBusinessName" column="bd_business_id" select="selectBdBusinessName"/>
+        <association property="bdUniversityName" column="bd_university_id" select="selectBdUniversityName"/>
+        <association property="bdDegreesName" column="bd_degrees_id" select="selectBdDegreesName"/>
+        <association property="hometownName" column="hometown" select="selectHometownName"/>
+        <association property="bdCityName" column="bd_city_id" select="selectBdCityName"/>
+        <association property="referrerName" column="referrer_id" select="selectReferrerName"/>
+        <association property="imageStatus" column="ac_user_id" select="selectImageStatus"/>
+    </resultMap>
+
+    <select id="selectImageStatus" resultType="java.lang.Integer">
+      SELECT COUNT(img.ac_u_image_id) FROM t_ac_u_image img WHERE img.ac_user_id=#{ac_user_id} AND img.status=0
+    </select>
+    <select id="selectZodiacName" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{zodiac}
+    </select>
+    <select id="selectBdBusinessName" resultType="java.lang.String">
+      SELECT b.name FROM t_bd_business b WHERE b.bd_business_id=#{bd_business_id}
+    </select>
+    <select id="selectBdUniversityName" resultType="java.lang.String">
+      SELECT bu.name FROM t_bd_university bu WHERE bu.bd_university_id=#{bd_university_id}
+    </select>
+    <select id="selectBdDegreesName" resultType="java.lang.String">
+      SELECT bd.name FROM t_bd_degrees bd WHERE bd.bd_degrees_id=#{bd_degrees_id}
+    </select>
+    <select id="selectHometownName" resultType="java.lang.String">
+      SELECT bd.name FROM t_bd_district bd WHERE bd.bd_district_id=#{hometown}
+    </select>
+    <select id="selectBdCityName" resultType="java.lang.String">
+      SELECT bc.name FROM t_bd_city bc WHERE bc.bd_city_id=#{bd_city_id}
+    </select>
+    <select id="selectReferrerName" resultType="java.lang.String">
+      SELECT phone_number FROM t_ac_user WHERE ac_user_id=#{referrer_id}
+    </select>
+
+
+
+    <select id="conditionQueryAcUser" resultMap="commentResultMap">
+        SELECT * FROM t_ac_user au
+        <where>
+            <if test="null != acUser.nickname">
+                au.nickname LIKE CONCAT('%',#{acUser.nickname},'%')
+            </if>
+            <if test="null != acUser.phoneNumber">
+                AND au.phone_number LIKE CONCAT('%',#{acUser.phoneNumber},'%')
+            </if>
+            <if test="null != acUser.sex">
+                AND au.sex LIKE CONCAT('%',#{acUser.sex},'%')
+            </if>
+            <if test="null != acUser.no">
+                AND au.no LIKE CONCAT('%',#{acUser.no},'%')
+            </if>
+            <if test="null != acUser.status">
+                AND au.status LIKE CONCAT('%',#{acUser.status},'%')
+            </if>
+            <if test="null != acUser.idVerifyStatus">
+                AND au.id_verify_status = #{acUser.idVerifyStatus}
+            </if>
+            <if test="null != acUser.imageStatus">
+                <if test="acUser.imageStatus == 1">
+                    AND NOT EXISTS( SELECT * FROM t_ac_u_image ui WHERE ui.ac_user_id=au.ac_user_id AND (ui.status=0 OR ui.status=-1))
+                    AND (SELECT COUNT(*) FROM t_ac_u_image aui WHERE aui.ac_user_id=au.ac_user_id)>0
+                </if>
+                <if test="acUser.imageStatus != 1">
+                    AND au.ac_user_id IN (SELECT img.ac_user_id FROM t_ac_u_image img WHERE img.status LIKE CONCAT('%',#{acUser.imageStatus},'%'))
+                </if>
+            </if>
+            <if test="null != acUser.bdCityId || null != provinceId">
+                AND au.bd_city_id IN (SELECT bc.bd_city_id FROM t_bd_city bc
+                <where>
+                    <if test="null != acUser.bdCityId">
+                        bc.bd_city_id LIKE CONCAT('%',#{acUser.bdCityId},'%')
+                    </if>
+                    <if test="null != provinceId">
+                        AND bc.bd_province_id LIKE CONCAT('%',#{provinceId},'%')
+                    </if>
+                </where>)
+            </if>
+        </where>
+        ORDER BY au.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+
+    <select id="count" resultType="int">
+        SELECT COUNT(au.ac_user_id) FROM t_ac_user au
+        <where>
+            <if test="null != acUser.nickname">
+                au.nickname LIKE CONCAT('%',#{acUser.nickname},'%')
+            </if>
+            <if test="null != acUser.phoneNumber">
+                AND au.phone_number LIKE CONCAT('%',#{acUser.phoneNumber},'%')
+            </if>
+            <if test="null != acUser.sex">
+                AND au.sex LIKE CONCAT('%',#{acUser.sex},'%')
+            </if>
+            <if test="null != acUser.no">
+                AND au.no LIKE CONCAT('%',#{acUser.no},'%')
+            </if>
+            <if test="null != acUser.status">
+                AND au.status LIKE CONCAT('%',#{acUser.status},'%')
+            </if>
+            <if test="null != acUser.idVerifyStatus">
+                AND au.id_verify_status = #{acUser.idVerifyStatus}
+            </if>
+            <if test="null != acUser.imageStatus">
+                <if test="acUser.imageStatus == 1">
+                    AND NOT EXISTS( SELECT * FROM t_ac_u_image ui WHERE ui.ac_user_id=au.ac_user_id AND (ui.status=0 OR ui.status=-1))
+                    AND (SELECT COUNT(*) FROM t_ac_u_image aui WHERE aui.ac_user_id=au.ac_user_id)>0
+                </if>
+                <if test="acUser.imageStatus != 1">
+                    AND au.ac_user_id IN (SELECT img.ac_user_id FROM t_ac_u_image img WHERE img.status LIKE CONCAT('%',#{acUser.imageStatus},'%'))
+                </if>
+            </if>
+            <if test="null != acUser.bdCityId || null != provinceId">
+                AND au.bd_city_id IN (SELECT bc.bd_city_id FROM t_bd_city bc
+                <where>
+                    <if test="null != acUser.bdCityId">
+                        bc.bd_city_id LIKE CONCAT('%',#{acUser.bdCityId},'%')
+                    </if>
+                    <if test="null != provinceId">
+                        AND bc.bd_province_id LIKE CONCAT('%',#{provinceId},'%')
+                    </if>
+                </where>)
+            </if>
+        </where>
+    </select>
+
+    <update id="update">
+        UPDATE t_ac_user SET status=#{status} WHERE ac_user_id=#{acUserId}
+    </update>
+
+    <update id="updateToke">
+        UPDATE t_au_app_token SET expiry_time = #{expiryTime} WHERE ac_user_id = #{acUserId}
+    </update>
+
+    <select id="findById" resultMap="commentResultMap">
+        SELECT * FROM t_ac_user WHERE ac_user_id=#{acUserId}
+    </select>
+    <select id="nowCount"  resultType="int">
+        SELECT COUNT(ac_user_id) FROM t_ac_user WHERE create_time LIKE CONCAT('%',#{nowTime},'%')
+    </select>
+    <update id="replaceHeadById">
+        UPDATE t_ac_user SET head_image_url='user/public/default-failed-head.jpg' WHERE ac_user_id=#{userId}
+    </update>
+    <update id="updateIDByUserId">
+        UPDATE t_ac_user SET id_verify_status=#{idVerifyStatus} WHERE ac_user_id=#{acUserId}
+    </update>
+
+    <resultMap id="findUserIdAndUserName" type="com.ynw.system.entity.AcUser">
+        <id column="ac_user_id" property="acUserId"/>
+        <result column="nickname" property="nickname"/>
+        <result column="no" property="no" jdbcType="VARCHAR" />
+    </resultMap>
+    <select id="findUserIdAndUserNameByNo" resultMap="findUserIdAndUserName">
+        SELECT * FROM t_ac_user ua WHERE ua.type = 1
+    </select>
+
+    <resultMap id="scheduledTasksResultMap" type="com.ynw.system.entity.AcUser">
+        <id column="ac_user_id" property="acUserId" jdbcType="VARCHAR" />
+        <result column="no" property="no" jdbcType="VARCHAR" />
+        <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+        <result column="real_name" property="realName" jdbcType="VARCHAR" />
+        <result column="sex" property="sex" jdbcType="INTEGER" />
+        <result column="age" property="age" jdbcType="INTEGER" />
+        <result column="birthday" property="birthday" jdbcType="INTEGER" />
+        <result column="id_number" property="idNumber" jdbcType="INTEGER" />
+        <result column="phone_number" property="phoneNumber" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="referrer_id" property="referrerId" jdbcType="VARCHAR" />
+        <result column="last_call_time" property="lastCallTime" jdbcType="VARCHAR" />
+        <association property="bdBusinessName" column="bd_business_id" select="selectBdBusinessName"/>
+        <association property="bdUniversityName" column="bd_university_id" select="selectBdUniversityName"/>
+        <association property="bdDegreesName" column="bd_degrees_id" select="selectBdDegreesName"/>
+        <association property="hometownName" column="hometown" select="selectHometownName"></association>
+        <association property="bdCityName" column="bd_city_id" select="selectBdCityName"></association>
+    </resultMap>
+
+    <select id="scheduleTimeRegisteredUser" resultMap="scheduledTasksResultMap">
+        SELECT * FROM t_ac_user WHERE create_time LIKE CONCAT('%',#{dateToString},'%') AND `type` = 0
+    </select>
+    <select id="activeUser" resultMap="scheduledTasksResultMap">
+        SELECT * FROM t_ac_user WHERE last_call_time LIKE CONCAT('%',#{dateToString},'%') AND `type` = 0
+    </select>
+
+    <select id="findMaxNo" resultMap="findUserIdAndUserName">
+        SELECT * FROM t_ac_user ORDER BY `no` + 0 DESC LIMIT 1
+    </select>
+    <insert id="insertByBatch">
+        INSERT INTO t_ac_user (ac_user_id,`no`,`type`,nickname,real_name,`sex`, head_image_url, phone_number, referral_code, create_time) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.acUserId},#{item.no},#{item.type},#{item.nickname},#{item.realName},#{item.sex},#{item.headImageUrl},
+            #{item.phoneNumber},#{item.referralCode},#{item.createTime})
+        </foreach>
+    </insert>
+    <select id="verifyPersonData" resultType="java.lang.Boolean">
+    select IF(nickname is null
+    or
+    birthday is null
+    or
+    bd_university_id is null
+    or
+    hometown is null
+    or
+    u.head_image_url = 'system/boy.png' or u.head_image_url = 'system/girl.png'
+    or
+    (select count(rel.ac_u_label_rel_id) from t_ac_u_label_rel rel left join t_ac_label label on label.ac_label_id=rel.ac_label_id
+    left join t_ac_label_ctgy ctgy on ctgy.ac_label_ctgy_id=label.ac_label_ctgy_id where ctgy.key='ULT_PERSONALITY' and rel.ac_user_id=u.ac_user_id)=0
+    or
+    (select count(rel.ac_u_label_rel_id) from t_ac_u_label_rel rel left join t_ac_label label on label.ac_label_id=rel.ac_label_id
+    left join t_ac_label_ctgy ctgy on ctgy.ac_label_ctgy_id=label.ac_label_ctgy_id where ctgy.key<![CDATA[!=]]>'ULT_PERSONALITY' and rel.ac_user_id=u.ac_user_id)=0
+    or
+
+    (select count(acu.ac_u_image_id) from t_ac_u_image acu where acu.ac_user_id=u.ac_user_id and status=1)=0
+
+    ,false,true) from t_ac_user u
+    where u.ac_user_id=#{acUserId};
+</select>
+</mapper>

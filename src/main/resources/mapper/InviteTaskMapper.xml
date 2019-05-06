@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.InviteTaskMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.InviteTask">
+        <id column="ac_task_id" property="acTaskId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="ac_user_id" property="acUserId"/>
+        <result column="task_name" property="taskName"/>
+        <result column="status" property="status"/>
+        <result column="update_time" property="updateTime"/>
+        <association property="userName" column="ac_user_id" select="selectUserName"/>
+        <association property="userPhone" column="ac_user_id" select="selectUserPhone"/>
+        <association property="inviteName" column="ac_user_id" select="selectInviteName"/>
+        <association property="taskKeyValue" column="task_name" select="selectTaskKeyValue"/>
+        <association property="invitePhone" column="ac_user_id" select="selectInvitePhone"/>
+    </resultMap>
+
+    <select id="selectInvitePhone" resultType="java.lang.String">
+        SELECT us.phone_number FROM t_ac_user us WHERE us.ac_user_id IN (SELECT ua.referrer_id FROM t_ac_user ua WHERE ua.ac_user_id=#{ac_user_id})
+    </select>
+    <select id="selectInviteName" resultType="java.lang.String">
+      SELECT us.nickname FROM t_ac_user us WHERE us.ac_user_id IN (SELECT ua.referrer_id FROM t_ac_user ua WHERE ua.ac_user_id=#{ac_user_id})
+    </select>
+    <select id="selectUserPhone" resultType="java.lang.String">
+      SELECT phone_number FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserName" resultType="java.lang.String">
+      SELECT nickname FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectTaskKeyValue" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{task_name}
+    </select>
+
+    <select id="isComplete" resultType="java.lang.Boolean">
+        select IF(taskNum=0,false,taskNum=completeNum
+                and not exists(select f.ac_sugar_flow_id from t_ac_sugar_flow f where f.ac_user_id= (select u.referrer_id from t_ac_user u where u.ac_user_id=#{acUserId})
+                                                                                                                  and f.asso_business_id=#{acUserId}
+    ))    from (select count(task.ac_task_id) as taskNum from  t_ac_invite_task task where
+            task.ac_user_id=#{acUserId}
+                                    ) t1,(select count(task.ac_task_id) as completeNum from  t_ac_invite_task task where
+            task.ac_user_id=#{acUserId}
+            and task.status=1
+                                    ) t2
+
+  </select>
+    <update id="completeTask">
+      update t_ac_invite_task set `status`=1,
+      update_time = now()
+      where ac_user_id=#{acUserId}
+      and task_name=#{taskName}
+    </update>
+    <select id="findById" resultMap="commentResultMap">
+        SELECT * FROM t_ac_sugar_flow WHERE ac_sugar_flow_id = #{acSugarFlowId}
+    </select>
+    <select id="conditionQueryInviteTask" resultMap="commentResultMap">
+        SELECT * FROM t_ac_invite_task sf
+        <where>
+            <if test="null != inviteTask.userName || null != inviteTask.userPhone">
+                sf.ac_user_id IN (SELECT au.ac_user_id FROM t_ac_user au
+                <where>
+                    <if test="null != inviteTask.userPhone">
+                        au.phone_number LIKE CONCAT('%',#{inviteTask.userPhone},'%')
+                    </if>
+                    <if test="null != inviteTask.userName">
+                        AND au.nickname LIKE CONCAT('%',#{inviteTask.userName},'%')
+                    </if>
+                </where>
+                )
+            </if>
+            <if test="null != inviteTask.inviteName || null != inviteTask.invitePhone">
+                AND sf.ac_user_id IN (SELECT ua.ac_user_id FROM t_ac_user ua WHERE ua.referrer_id IN (
+                SELECT us.ac_user_id FROM t_ac_user us
+                <where>
+                    <if test="null != inviteTask.invitePhone">
+                        us.phone_number LIKE CONCAT('%',#{inviteTask.invitePhone},'%')
+                    </if>
+                    <if test="null != inviteTask.inviteName">
+                        AND us.nickname LIKE CONCAT('%',#{inviteTask.inviteName},'%')
+                    </if>
+                </where>
+                )
+                )
+            </if>
+            <if test="null != inviteTask.status">
+                AND sf.status LIKE CONCAT('%',#{inviteTask.status},'%')
+            </if>
+        </where>
+        ORDER BY sf.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(sf.ac_task_id) FROM t_ac_invite_task sf
+        <where>
+            <if test="null != userName || null != userPhone">
+                sf.ac_user_id IN (SELECT au.ac_user_id FROM t_ac_user au
+                <where>
+                    <if test="null != userPhone">
+                        au.phone_number LIKE CONCAT('%',#{userPhone},'%')
+                    </if>
+                    <if test="null != userName">
+                        AND au.nickname LIKE CONCAT('%',#{userName},'%')
+                    </if>
+                </where>
+                )
+            </if>
+            <if test="null != inviteName || null != invitePhone">
+                AND sf.ac_user_id IN (SELECT ua.ac_user_id FROM t_ac_user ua WHERE ua.referrer_id IN (
+                SELECT us.ac_user_id FROM t_ac_user us
+                <where>
+                    <if test="null != invitePhone">
+                        us.phone_number LIKE CONCAT('%',#{invitePhone},'%')
+                    </if>
+                    <if test="null != inviteName">
+                        AND us.nickname LIKE CONCAT('%',#{inviteName},'%')
+                    </if>
+                </where>
+                )
+                )
+            </if>
+            <if test="null != status">
+                AND sf.status LIKE CONCAT('%',#{status},'%')
+            </if>
+        </where>
+    </select>
+
+    <!--<insert id="insertByBatch">-->
+        <!--INSERT INTO t_ac_cp_flow (ac_cp_flow_id,ac_cp_rel_id,req_user_id,res_user_id,src_type,src_id,`status`,create_time) VALUES-->
+        <!--<foreach collection="list" item="item" index="index" separator=",">-->
+            <!--(#{item.acCpFlowId},#{item.acCpRelId},#{item.reqUserId},#{item.resUserId},#{item.srcType},#{item.srcId},#{item.status},#{item.createTime})-->
+        <!--</foreach>-->
+    <!--</insert>-->
+</mapper>

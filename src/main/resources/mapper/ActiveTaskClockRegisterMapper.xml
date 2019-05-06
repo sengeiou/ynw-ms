@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.ActiveTaskClockRegisterMapper">
+    <resultMap id="generalDutyResultMap" type="com.ynw.system.entity.ActiveTaskClockRegister">
+        <id column="at_wkcp_do_task_id" property="atWkcpDoTaskId"/>
+        <result column="at_wkcp_task_id" property="atWkcpTaskId"/>
+        <result column="ac_cp_rel_id" property="acCpRelId"/>
+        <result column="ds_mood_id" property="dsMoodId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="status" property="status"/>
+    </resultMap>
+    <resultMap id="registerResultMap" type="com.ynw.system.entity.ActiveTaskClockRegister" extends="generalDutyResultMap">
+        <association property="reqName" column="{ac_cp_rel_id=ac_cp_rel_id,at_wkcp_task_id=at_wkcp_task_id}" select="selectReqName"/>
+        <association property="resName" column="{ac_cp_rel_id=ac_cp_rel_id,at_wkcp_task_id=at_wkcp_task_id}" select="selectResName"/>
+        <association property="matchNo" column="{ac_cp_rel_id=ac_cp_rel_id,at_wkcp_task_id=at_wkcp_task_id}" select="selectMatchNo"/>
+        <association property="missionName" column="at_wkcp_task_id" select="selectMissionName"/>
+        <association property="missionDay" column="at_wkcp_task_id" select="selectMissionDay"/>
+    </resultMap>
+
+    <select id="selectMatchNo" resultType="java.lang.String">
+      SELECT ua.match_no FROM t_at_wkcp_user ua WHERE ua.at_register_id IN (SELECT wt.at_register_id FROM t_at_wkcp_task wt
+      WHERE wt.at_wkcp_task_id = #{at_wkcp_task_id}) AND ua.ac_user_id IN (SELECT cp.req_user_id FROM t_ac_cp_rel cp
+      WHERE cp.ac_cp_rel_id = #{ac_cp_rel_id})
+    </select>
+    <select id="selectReqName" resultType="java.lang.String">
+      SELECT ua.name FROM t_at_wkcp_user ua WHERE ua.at_register_id IN (SELECT wt.at_register_id FROM t_at_wkcp_task wt
+      WHERE wt.at_wkcp_task_id = #{at_wkcp_task_id}) AND ua.ac_user_id IN (SELECT cp.req_user_id FROM t_ac_cp_rel cp
+      WHERE cp.ac_cp_rel_id = #{ac_cp_rel_id})
+    </select>
+    <select id="selectResName" resultType="java.lang.String">
+      SELECT ua.name FROM t_at_wkcp_user ua WHERE ua.at_register_id IN (SELECT wt.at_register_id FROM t_at_wkcp_task wt
+      WHERE wt.at_wkcp_task_id = #{at_wkcp_task_id}) AND ua.ac_user_id IN (SELECT cp.res_user_id FROM t_ac_cp_rel cp
+      WHERE cp.ac_cp_rel_id = #{ac_cp_rel_id})
+    </select>
+    <select id="selectMissionName" resultType="java.lang.String">
+        SELECT task_des FROM t_at_wkcp_task WHERE at_wkcp_task_id = #{at_wkcp_task_id}
+    </select>
+    <select id="selectMissionDay" resultType="java.lang.Integer">
+        SELECT `day` FROM t_at_wkcp_task WHERE at_wkcp_task_id = #{at_wkcp_task_id}
+    </select>
+
+    <select id="conditionQueryActiveTaskClockRegister" resultMap="registerResultMap">
+        SELECT * FROM t_at_wkcp_do_task wt
+         <where>
+            wt.at_wkcp_task_id IN (SELECT wa.at_wkcp_task_id FROM t_at_wkcp_task wa
+            <where>
+                wa.at_register_id=#{register.atRegisterId}
+                <if test="null != register.missionDay">
+                    AND wa.day = #{register.missionDay}
+                </if>
+            </where>
+            )
+             <if test="null != register.status">
+                 AND wt.status LIKE CONCAT('%',#{register.status},'%')
+             </if>
+             <if test="null != register.reqName || null != register.matchNo">
+                 AND wt.ac_cp_rel_id IN (SELECT fa.ac_cp_rel_id FROM t_ac_cp_rel fa
+                 <where>
+                     fa.req_user_id IN (SELECT ua.ac_user_id
+                     FROM t_at_wkcp_user ua
+                     <where>
+                         <if test="null != register.reqName">
+                             ua.name LIKE CONCAT('%',#{register.reqName},'%')
+                         </if>
+                         <if test="null != register.matchNo">
+                             AND ua.match_no LIKE CONCAT('%',#{register.matchNo},'%')
+                         </if>
+                     </where>
+                     ) OR fa.res_user_id IN (SELECT us.ac_user_id
+                     FROM t_at_wkcp_user us
+                     <where>
+                         <if test="null != register.reqName">
+                             us.name LIKE CONCAT('%',#{register.reqName},'%')
+                         </if>
+                         <if test="null != register.matchNo">
+                             AND us.match_no LIKE CONCAT('%',#{register.matchNo},'%')
+                         </if>
+                     </where>
+                     )
+                 </where>
+                 )
+             </if>
+         </where>
+         ORDER BY wt.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(wt.at_wkcp_do_task_id) FROM t_at_wkcp_do_task wt
+        <where>
+            wt.at_wkcp_task_id IN (SELECT wa.at_wkcp_task_id FROM t_at_wkcp_task wa
+            <where>
+                wa.at_register_id=#{atRegisterId}
+                <if test="null != missionDay">
+                    AND wa.day = #{missionDay}
+                </if>
+            </where>
+            )
+            <if test="null != status">
+                AND wt.status LIKE CONCAT('%',#{status},'%')
+            </if>
+            <if test="null != reqName || null != matchNo">
+                AND wt.ac_cp_rel_id IN (SELECT fa.ac_cp_rel_id FROM t_ac_cp_rel fa
+                <where>
+                    fa.req_user_id IN (SELECT ua.ac_user_id
+                    FROM t_at_wkcp_user ua
+                    <where>
+                        <if test="null != reqName">
+                            ua.name LIKE CONCAT('%',#{reqName},'%')
+                        </if>
+                        <if test="null != matchNo">
+                            AND ua.match_no LIKE CONCAT('%',#{matchNo},'%')
+                        </if>
+                    </where>
+                    ) OR fa.res_user_id IN (SELECT us.ac_user_id
+                    FROM t_at_wkcp_user us
+                    <where>
+                        <if test="null != reqName">
+                            us.name LIKE CONCAT('%',#{reqName},'%')
+                        </if>
+                        <if test="null != matchNo">
+                            AND us.match_no LIKE CONCAT('%',#{matchNo},'%')
+                        </if>
+                    </where>
+                    )
+                </where>
+                )
+            </if>
+        </where>
+    </select>
+
+</mapper>

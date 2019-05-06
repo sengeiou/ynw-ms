@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.SignInMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.SignIn">
+        <id column="tk_signin_flow_id" property="tkSigninFlowId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="ac_user_id" property="acUserId"/>
+        <result column="signin_date" property="signinDate"/>
+        <association property="acUserName" column="ac_user_id" select="selectUserName"/>
+        <association property="acUserPhone" column="ac_user_id" select="selectUserPhone"/>
+        <association property="acUserImg" column="ac_user_id" select="selectUserImg"/>
+    </resultMap>
+
+    <select id="selectUserImg" resultType="java.lang.String">
+      SELECT head_image_url FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserPhone" resultType="java.lang.String">
+      SELECT phone_number FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserName" resultType="java.lang.String">
+      SELECT nickname FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+
+
+    <select id="conditionQuerySignIn" resultMap="commentResultMap">
+        SELECT * FROM t_tk_signin_flow sf
+        <where>
+            <if test="null != signIn.acUserPhone">
+                sf.ac_user_id IN (SELECT au.ac_user_id FROM t_ac_user au WHERE au.phone_number LIKE CONCAT('%',#{signIn.acUserPhone},'%'))
+            </if>
+            <if test="null != signIn.signinDate">
+                AND sf.signin_date LIKE CONCAT('%',#{signIn.signinDate},'%')
+            </if>
+        </where>
+        ORDER BY sf.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(sf.tk_signin_flow_id) FROM t_tk_signin_flow sf
+        <where>
+            <if test="null != acUserPhone">
+                sf.ac_user_id IN (SELECT au.ac_user_id FROM t_ac_user au WHERE au.phone_number LIKE CONCAT('%',#{acUserPhone},'%'))
+            </if>
+            <if test="null != signinDate">
+                AND sf.signin_date LIKE CONCAT('%',#{signinDate},'%')
+            </if>
+        </where>
+    </select>
+    <select id="nowCount" resultType="java.lang.Integer">
+        SELECT COUNT(tk_signin_flow_id) FROM t_tk_signin_flow WHERE create_time LIKE CONCAT('%',#{nowTime},'%')
+    </select>
+    <!--<select id="findLoveQuantitySum" resultType="int">-->
+        <!--SELECT SUM(fb.quantity) FROM t_ac_bean_flow fb-->
+        <!--<where>-->
+            <!---->
+            <!--<if test="null != type">-->
+                <!--fb.type LIKE CONCAT('%',#{type},'%')-->
+            <!--</if>-->
+        <!--</where>-->
+    <!--</select>-->
+</mapper>

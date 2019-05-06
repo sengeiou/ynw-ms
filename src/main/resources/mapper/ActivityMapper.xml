@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.ActivityMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Activity">
+        <id column="at_wkcp_user_id" property="atWkcpUserId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="ac_user_id" property="acUserId"/>
+        <result column="name" property="name"/>
+        <result column="sex" property="sex"/>
+        <result column="age" property="age"/>
+        <result column="grade" property="grade"/>
+        <result column="height" property="height"/>
+        <result column="weight" property="weight"/>
+        <result column="photo_url" property="photoUrl"/>
+        <result column="share_screenshot_url" property="shareScreenshotUrl"/>
+        <result column="phone_number" property="phoneNumber"/>
+        <result column="wechat" property="wechat"/>
+        <result column="remark" property="remark"/>
+        <result column="want_other" property="wantOther"/>
+        <result column="status" property="status"/>
+        <result column="match_no" property="matchNo"/>
+        <association property="identity" column="identity" select="selectIdentityName"/>
+        <association property="atRegisterId" column="at_register_id" select="selectRegisterName"/>
+        <association property="bdDegreesId" column="bd_degrees_id" select="selectDegreesName"/>
+        <association property="bdUniversityId" column="bd_university_id" select="selectUniversityName"/>
+        <association property="loveHistory" column="love_history" select="selectHistoryName"/>
+        <association property="characterType" column="character_type" select="selectCharacterTypeName"/>
+        <association property="wantSex" column="want_sex" select="selectWantSexName"/>
+        <association property="wantHeight" column="want_height" select="selectWantHeightName"/>
+        <association property="wantWeight" column="want_weight" select="selectWantWeightName"/>
+        <association property="wantAge" column="want_age" select="selectWantAgeName"/>
+        <association property="wantLoveHistory" column="want_love_history" select="selectWantLoveHistoryName"/>
+        <association property="wantCharacterType" column="want_character_type" select="selectWantCharacterTypeName"/>
+    </resultMap>
+
+    <resultMap id="matchNoAndStatusResultMap" type="com.ynw.system.entity.Activity" extends="commentResultMap">
+        <association property="imUserId" column="ac_user_id" select="selectImUserId"/>
+    </resultMap>
+
+    <resultMap id="ActivityResultMap" type="com.ynw.system.entity.Activity">
+        <id column="at_wkcp_user_id" property="atWkcpUserId"/>
+        <result column="at_register_id" property="atRegisterId"/>
+        <result column="ac_user_id" property="acUserId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="sex" property="sex"/>
+        <result column="age" property="age"/>
+        <result column="height" property="height"/>
+        <result column="weight" property="weight"/>
+        <result column="match_no" property="matchNo"/>
+        <result column="phone_number" property="phoneNumber"/>
+        <result column="cp_no" property="cpNo"/>
+        <result column="bd_university_id" property="bdUniversityId"/>
+        <result column="bd_degrees_id" property="bdDegreesId"/>
+        <result column="love_history" property="loveHistory"/>
+        <result column="character_type" property="characterType"/>
+        <result column="want_sex" property="wantSex"/>
+        <result column="want_height" property="wantHeight"/>
+        <result column="want_weight" property="wantWeight"/>
+        <result column="want_age" property="wantAge"/>
+        <result column="want_love_history" property="wantLoveHistory"/>
+        <result column="want_character_type" property="wantCharacterType"/>
+        <association property="longitude" column="bd_university_id" select="selectLongitude"/>
+        <association property="latitude" column="bd_university_id" select="selectLatitude"/>
+    </resultMap>
+
+    <resultMap id="sendResultMap" type="com.ynw.system.entity.Activity">
+        <id column="at_wkcp_user_id" property="atWkcpUserId"/>
+        <result column="match_no" property="matchNo"/>
+        <result column="phone_number" property="phoneNumber"/>
+    </resultMap>
+
+    <resultMap id="favorAbilityRanking" type="com.ynw.system.entity.Activity">
+        <id column="at_wkcp_user_id" property="atWkcpUserId"/>
+        <id column="feeling" property="feeling"/>
+    </resultMap>
+
+    <resultMap id="favorAbility" type="com.ynw.system.entity.Activity" extends="favorAbilityRanking">
+        <association property="favorAbility" column="at_wkcp_user_id" select="findFavorAbility"></association>
+    </resultMap>
+
+    <select id="findFavorAbility" resultMap="sendResultMap">
+        SELECT  FROM t_at_wkcp_user ua WHERE
+    </select>
+
+    <select id="selectIdentityName" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{identity}
+    </select>
+    <select id="selectWantCharacterTypeName" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{want_character_type}
+    </select>
+    <select id="selectWantLoveHistoryName" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{want_love_history}
+    </select>
+    <select id="selectWantAgeName" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{want_age}
+    </select>
+    <select id="selectWantWeightName" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{want_weight}
+    </select>
+    <select id="selectWantHeightName" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{want_height}
+    </select>
+    <select id="selectWantSexName" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{want_sex}
+    </select>
+    <select id="selectCharacterTypeName" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{character_type}
+    </select>
+    <select id="selectHistoryName" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{love_history}
+    </select>
+    <select id="selectUniversityName" resultType="java.lang.String">
+      SELECT `name` FROM t_bd_university WHERE bd_university_id=#{bd_university_id}
+    </select>
+    <select id="selectDegreesName" resultType="java.lang.String">
+      SELECT `name` FROM t_bd_degrees WHERE bd_degrees_id=#{bd_degrees_id}
+    </select>
+    <select id="selectRegisterName" resultType="java.lang.String">
+      SELECT `name` FROM t_at_register WHERE at_register_id=#{at_register_id}
+    </select>
+
+    <select id="conditionQueryActivity" resultMap="commentResultMap">
+        SELECT * FROM t_at_wkcp_user ar
+        <where>
+            ar.at_register_id = #{activity.atRegisterId}
+            <if test="null != activity.name">
+                AND ar.name LIKE CONCAT('%',#{activity.name},'%')
+            </if>
+            <if test="null != activity.phoneNumber">
+                AND ar.phone_number LIKE CONCAT('%',#{activity.phoneNumber},'%')
+            </if>
+            <if test="null != activity.sex">
+                AND ar.sex LIKE CONCAT('%',#{activity.sex},'%')
+            </if>
+            <if test="null != activity.identity">
+                AND ar.identity LIKE CONCAT('%',#{activity.identity},'%')
+            </if>
+            <if test="null != activity.matchNo">
+                AND ar.match_no LIKE CONCAT('%',#{activity.matchNo},'%')
+            </if>
+        </where>
+        ORDER BY ar.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(ar.at_wkcp_user_id) FROM t_at_wkcp_user ar
+        <where>
+            ar.at_register_id = #{atRegisterId}
+            <if test="null != name">
+                AND ar.name LIKE CONCAT('%',#{name},'%')
+            </if>
+            <if test="null != phoneNumber">
+                AND ar.phone_number LIKE CONCAT('%',#{phoneNumber},'%')
+            </if>
+            <if test="null != sex">
+                AND ar.sex LIKE CONCAT('%',#{sex},'%')
+            </if>
+            <if test="null != identity">
+                AND ar.identity LIKE CONCAT('%',#{identity},'%')
+            </if>
+            <if test="null != matchNo">
+                AND ar.match_no LIKE CONCAT('%',#{matchNo},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="findActivity" resultMap="commentResultMap">
+        SELECT * FROM t_at_wkcp_user WHERE at_wkcp_user_id=#{activityId}
+    </select>
+
+    <select id="findAll" resultMap="commentResultMap">
+        SELECT * FROM  t_at_wkcp_user
+    </select>
+
+    <select id="selectImUserId" resultType="java.lang.String">
+      SELECT im_user_id FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+
+    <select id="findByRegisterIdAndGroup" resultMap="matchNoAndStatusResultMap">
+        SELECT * FROM t_at_wkcp_user wu WHERE wu.at_register_id = #{registerId}
+        AND wu.ac_user_id NOT IN (SELECT igm.member_id FROM t_im_group_member igm WHERE igm.im_group_id IN (
+        SELECT ig.im_group_id FROM t_im_group ig WHERE ig.business_id = #{registerId} AND ig.use_type = 2 AND ig.status = 1
+        )) ORDER BY wu.create_time ASC
+    </select>
+
+    <select id="findByRegisterId" resultMap="matchNoAndStatusResultMap">
+        SELECT * FROM t_at_wkcp_user WHERE at_register_id = #{registerId}
+    </select>
+
+    <select id="findByMatchNoAndStatus" resultMap="matchNoAndStatusResultMap">
+        SELECT * FROM t_at_wkcp_user WHERE match_no IS NOT NULL AND match_no LIKE CONCAT('%',#{grouping},'%')
+        AND status = 2 AND at_register_id=#{registerId}
+    </select>
+
+    <update id="updateStatus">
+        UPDATE t_at_wkcp_user SET status = #{status} WHERE at_wkcp_user_id=#{atWkcpUserId}
+    </update>
+
+    <update id="batchUpdateStatus">
+        UPDATE t_at_wkcp_user SET status = #{status} WHERE at_wkcp_user_id IN
+        <foreach collection="list" item="params" open="(" separator="," close=")">
+          #{params.atWkcpUserId}
+        </foreach>
+    </update>
+
+    <update id="batchUpdate">
+        UPDATE t_at_wkcp_user
+        <set>
+            <if test="null != activity.matchNo">
+                match_no = #{activity.matchNo},
+            </if>
+            <if test="null != activity.status">
+                `status` = #{activity.status},
+            </if>
+        </set>
+        WHERE at_wkcp_user_id IN
+        <foreach collection="list" item="params" open="(" separator="," close=")">
+            #{params.atWkcpUserId}
+        </foreach>
+    </update>
+    
+    <update id="updateMatchNo">
+        UPDATE t_at_wkcp_user SET match_no=#{matchNo},`status`=1 WHERE at_wkcp_user_id=#{atWkcpUserId}
+    </update>
+
+    <select id="selectLongitude" resultType="java.lang.Double">
+        SELECT longitude FROM t_bd_university WHERE bd_university_id = #{bd_university_id}
+    </select>
+
+    <select id="selectLatitude" resultType="java.lang.Double">
+        SELECT latitude FROM t_bd_university WHERE bd_university_id = #{bd_university_id}
+    </select>
+
+    <select id="findBySexAndWantSex" resultMap="ActivityResultMap">
+        SELECT * FROM t_at_wkcp_user WHERE sex=#{sex} AND want_sex=#{wantSex} AND `status`=0 AND at_register_id=#{registerId} ORDER BY create_time ASC
+    </select>
+
+    <update id="updateMatchNoAll">
+        UPDATE t_at_wkcp_user wa SET wa.match_no=NULL,wa.cp_no=NULL,wa.status=0,wa.confirm_cp=0 WHERE (wa.ac_user_id NOT IN (SELECT ac.req_user_id FROM t_ac_cp_rel ac
+        WHERE ac.status='URS_CP_CREATED') OR wa.ac_user_id NOT IN (SELECT ac.res_user_id FROM t_ac_cp_rel ac
+        WHERE ac.status='URS_CP_CREATED')) AND wa.at_register_id=#{registerId} AND wa.status != -1
+    </update>
+
+    <select id="findMatchNoIsNullByMenOrWomen" resultMap="ActivityResultMap">
+        SELECT * FROM t_at_wkcp_user WHERE match_no IS NULL AND sex=#{sex} AND at_register_id=#{registerId} AND `status`=0
+    </select>
+
+    <select id="findMatchNoByRegisterId" resultType="java.lang.String">
+        SELECT DISTINCT(match_no) FROM t_at_wkcp_user WHERE at_register_id = #{registerId} AND match_no IS NOT NULL AND `status` = 2
+    </select>
+
+    <select id="findByRegisterIdAndLimit" resultMap="sendResultMap">
+        SELECT at_wkcp_user_id,match_no,phone_number FROM t_at_wkcp_user WHERE match_no IS NOT NULL AND at_register_id = #{registerId} AND `status` = 2 ORDER BY match_no ASC LIMIT 0,1000
+    </select>
+
+    <select id="selectListLimit" resultMap="sendResultMap">
+        SELECT at_wkcp_user_id,match_no,phone_number FROM t_at_wkcp_user WHERE match_no IS NOT NULL
+        AND at_register_id = #{activity.atRegisterId} AND `status` = #{activity.status} ORDER BY match_no ASC LIMIT 0,#{pageSize}
+    </select>
+    
+    <update id="updateMatchNoByConfirmCp">
+        UPDATE t_at_wkcp_user w,(SELECT aw.match_no,aw.cp_no FROM t_at_wkcp_user aw WHERE aw.confirm_cp = 0 AND aw.at_register_id = #{atRegisterId}
+         AND aw.match_no IS NOT NULL ) a SET w.match_no=NULL,w.confirm_cp=0,w.cp_no=NULL,w.status=0 WHERE w.at_register_id = #{atRegisterId} AND w.match_no = a.match_no
+        AND w.cp_no = a.cp_no AND w.status != -1
+    </update>
+
+    <update id="updateStatusByConfirmCp">
+        UPDATE t_at_wkcp_user SET `status` = -1 WHERE at_register_id = #{atRegisterId} AND confirm_cp = 0 AND match_no IS NOT NULL
+    </update>
+
+    <update id="updateMatchNoByStatus">
+        UPDATE t_at_wkcp_user SET match_no=NULL,confirm_cp=0,cp_no=NULL WHERE at_register_id = #{RegisterId} AND `status` = -1
+    </update>
+
+    <update id="updateStatusByUserRel">
+        UPDATE t_at_wkcp_user wu SET wu.`status` = -1 WHERE EXISTS (SELECT cp.ac_cp_rel_id FROM t_ac_cp_rel cp WHERE
+         (wu.ac_user_id = cp.req_user_id OR wu.ac_user_id = cp.res_user_id) AND cp.status = 'URS_CP_CREATED' AND cp.src_id != #{registerId})
+         AND wu.at_register_id = #{registerId}
+    </update>
+    
+     <update id="matchingBatchUpdate">
+         UPDATE t_at_wkcp_user SET `status` = 1,confirm_cp = 0,match_no = CASE at_wkcp_user_id
+         <foreach collection="list" item="params">
+             WHEN #{params.atWkcpUserId} THEN #{params.matchNo}
+         </foreach>
+         END,
+         cp_no = CASE at_wkcp_user_id
+         <foreach collection="list" item="params">
+             WHEN #{params.atWkcpUserId} THEN #{params.cpNo}
+         </foreach>
+         END
+         WHERE at_wkcp_user_id IN
+         <foreach collection="list" item="params" open="(" separator="," close=")">
+             #{params.atWkcpUserId}
+         </foreach>
+     </update>
+
+    <select id="findCountByRegisterIdAndMatchNo" resultType="java.lang.Integer">
+        SELECT COUNT(at_wkcp_user_id) FROM t_at_wkcp_user WHERE at_register_id = #{registerId} AND match_no = #{matchNo} AND sex = 1
+    </select>
+
+    <select id="findMatchNoMaxByRegisterIdAndMatchNo" resultType="java.lang.Integer">
+        SELECT cp_no FROM t_at_wkcp_user WHERE at_register_id = #{registerId} AND match_no = #{matchNo} ORDER BY cp_no DESC LIMIT 1
+    </select>
+
+    <update id="updateStatusBySex">
+        UPDATE (
+            SELECT man.at_wkcp_user_id,(
+            (
+            CASE woman.want_height
+            WHEN 'AUHT_ABOVE' THEN IF(man.height > 180,1,0)*0.1
+            WHEN 'AUHT_1.7AND1.8' THEN IF(man.height > 170 AND man.height <![CDATA[<= ]]> 180,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_HEIGHT_WEIGHT')
+            WHEN 'AUHT_1.6AND1.7' THEN IF(man.height > 160 AND man.height <![CDATA[<= ]]> 170,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_HEIGHT_WEIGHT')
+            WHEN 'AUHT_1.5AND1.6' THEN IF(man.height > 150 AND man.height <![CDATA[<= ]]> 160,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_HEIGHT_WEIGHT')
+            WHEN 'AUHT_UNDER1.5' THEN IF(man.height <![CDATA[<= ]]> 150,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_HEIGHT_WEIGHT')
+            WHEN 'AUHT_NOT_TO_MATTER' THEN (SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_HEIGHT_WEIGHT') END
+            )
+            + (
+            CASE woman.want_weight
+            WHEN 'AUWT_ABOVE_SEVENTY' THEN IF(man.weight > 70,1,0)*0.1
+            WHEN 'AUWT_SIXTY_AND_SEVENTY' THEN IF(man.weight > 60 AND man.weight <![CDATA[<= ]]> 70,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_WEIGHT')
+            WHEN 'AUWT_FIFTY_AND_SIXTY' THEN IF(man.weight > 50 AND man.weight <![CDATA[<= ]]> 60,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_WEIGHT')
+            WHEN 'AUWT_FORTY_AND_FIFTY' THEN IF(man.weight > 40 AND man.weight <![CDATA[<= ]]> 50,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_WEIGHT')
+            WHEN 'AUWT_UNFRT_FORTY' THEN IF(man.weight <![CDATA[<= ]]> 40,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_WEIGHT')
+            WHEN 'AUWT_NOT_TO_MARRER' THEN (SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_WEIGHT') END
+            )
+            + (
+            CASE woman.want_age
+            WHEN 'AUAT_LITTLE' THEN IF(man.age <![CDATA[<= ]]> woman.age,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_AGE_WEIGHT')
+            WHEN 'AUAT_BIG' THEN IF(man.age > woman.age,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_AGE_WEIGHT')
+            WHEN 'AUAT_NOT_TO_MARRER' THEN (SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_AGE_WEIGHT') END
+            )
+            + (
+            CASE woman.want_love_history
+            WHEN 'AULHT_BLANK' THEN IF(man.love_history = 'AULHT_BLANK',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_EMOTION_WEIGHT')
+            WHEN 'AULHT_MORE_THAN_ONCE' THEN IF(man.love_history = 'AULHT_MORE_THAN_ONCE',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_EMOTION_WEIGHT')
+            WHEN 'AULHT_AN_EXPERIENCE' THEN IF(man.love_history = 'AULHT_AN_EXPERIENCE',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_EMOTION_WEIGHT')
+            WHEN 'AULHT_NOT_TO_MARRER' THEN (SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_EMOTION_WEIGHT') END
+            )
+            + (
+            CASE woman.want_character_type
+            WHEN 'AUCT_ART' THEN IF(man.character_type = 'AUCT_ART',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_ACHIEVEMENT' THEN IF(man.character_type = 'AUCT_ACHIEVEMENT',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_LEADER' THEN IF(man.character_type = 'AUCT_LEADER',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_HELP' THEN IF(man.character_type = 'AUCT_HELP',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_PREFECT' THEN IF(man.character_type = 'AUCT_PREFECT',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_ACTIVE' THEN IF(man.character_type = 'AUCT_ACTIVE',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_PEACE' THEN IF(man.character_type = 'AUCT_PEACE',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_DOUBT' THEN IF(man.character_type = 'AUCT_DOUBT',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_REASON' THEN IF(man.character_type = 'AUCT_REASON',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT') END
+            )
+            +
+            6378.138 * 2 * ASIN(
+            SQRT(
+            POW(
+            SIN(
+            (
+            (SELECT us.latitude FROM t_ac_user us WHERE us.ac_user_id = woman.ac_user_id) * PI() / 180 - (SELECT us.latitude FROM t_ac_user us WHERE us.ac_user_id = man.ac_user_id) * PI() / 180
+            ) / 2
+            ),
+            2
+            ) + COS((SELECT us.latitude FROM t_ac_user us WHERE us.ac_user_id = woman.ac_user_id) * PI() / 180) * COS((SELECT us.latitude FROM t_ac_user us WHERE us.ac_user_id = man.ac_user_id) * PI() / 180) * POW(
+            SIN(
+            (
+            (SELECT us.longitude FROM t_ac_user us WHERE us.ac_user_id = woman.ac_user_id) * PI() / 180 - (SELECT us.longitude FROM t_ac_user us WHERE us.ac_user_id = man.ac_user_id) * PI() / 180
+            ) / 2
+            ),
+            2
+            )
+            )
+            ) * (SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_DISTANCE_WEIGHT')
+            - IF(
+            EXISTS(SELECT * FROM t_ac_cp_rel cp WHERE ((cp.req_user_id = woman.ac_user_id AND cp.res_user_id = man.ac_user_id)
+            OR (cp.res_user_id = woman.ac_user_id AND cp.req_user_id = man.ac_user_id)) AND cp.src_id != #{atRegisterId}),10000000,0)
+            ) AS feeling FROM t_at_wkcp_user man,t_at_wkcp_user woman WHERE man.at_register_id = #{atRegisterId}
+            AND man.sex != #{sex} AND man.match_no IS NULL AND woman.at_wkcp_user_id = #{atWkcpUserId} ORDER BY feeling DESC LIMIT 1
+            ) uw,t_at_wkcp_user au SET au.match_no = #{matchNo},au.status=1,au.confirm_cp = 0,au.cp_no = #{cpNo}
+            WHERE uw.at_wkcp_user_id = au.at_wkcp_user_id
+    </update>
+
+    <update id="updateMatchNoAndStatusAndCpNoById">
+        UPDATE t_at_wkcp_user SET match_no = #{matchNo},status=1,confirm_cp = 0,cp_no = #{cpNo} WHERE at_wkcp_user_id = #{atWkcpUserId}
+    </update>
+
+    <update id="updateByRegisterIdOrStatus">
+        UPDATE t_at_wkcp_user wu SET wu.match_no = NULL ,wu.status=0,wu.confirm_cp = 0,wu.cp_no = NULL WHERE  NOT EXISTS (SELECT cp.ac_cp_rel_id FROM t_ac_cp_rel cp WHERE
+         (wu.ac_user_id = cp.req_user_id
+        OR wu.ac_user_id = cp.res_user_id) AND cp.status = 'URS_CP_CREATED' AND cp.src_id = #{registerId} AND cp.src_type='CST_WEEKCP')
+         AND wu.at_register_id = #{registerId} AND wu.status != -1
+    </update>
+
+    <select id="findActivityBySex" resultMap="ActivityResultMap">
+            SELECT man.*,(
+            (
+            CASE woman.want_height
+            WHEN 'AUHT_ABOVE' THEN IF(man.height > 180,1,0)*0.1
+            WHEN 'AUHT_1.7AND1.8' THEN IF(man.height > 170 AND man.height <![CDATA[<= ]]> 180,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_HEIGHT_WEIGHT')
+            WHEN 'AUHT_1.6AND1.7' THEN IF(man.height > 160 AND man.height <![CDATA[<= ]]> 170,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_HEIGHT_WEIGHT')
+            WHEN 'AUHT_1.5AND1.6' THEN IF(man.height > 150 AND man.height <![CDATA[<= ]]> 160,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_HEIGHT_WEIGHT')
+            WHEN 'AUHT_UNDER1.5' THEN IF(man.height <![CDATA[<= ]]> 150,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_HEIGHT_WEIGHT')
+            WHEN 'AUHT_NOT_TO_MATTER' THEN (SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_HEIGHT_WEIGHT') END
+            )
+            + (
+            CASE woman.want_weight
+            WHEN 'AUWT_ABOVE_SEVENTY' THEN IF(man.weight > 70,1,0)*0.1
+            WHEN 'AUWT_SIXTY_AND_SEVENTY' THEN IF(man.weight > 60 AND man.weight <![CDATA[<= ]]> 70,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_WEIGHT')
+            WHEN 'AUWT_FIFTY_AND_SIXTY' THEN IF(man.weight > 50 AND man.weight <![CDATA[<= ]]> 60,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_WEIGHT')
+            WHEN 'AUWT_FORTY_AND_FIFTY' THEN IF(man.weight > 40 AND man.weight <![CDATA[<= ]]> 50,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_WEIGHT')
+            WHEN 'AUWT_UNFRT_FORTY' THEN IF(man.weight <![CDATA[<= ]]> 40,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_WEIGHT')
+            WHEN 'AUWT_NOT_TO_MARRER' THEN (SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_WEIGHT') END
+            )
+            + (
+            CASE woman.want_age
+            WHEN 'AUAT_LITTLE' THEN IF(man.age <![CDATA[<= ]]> woman.age,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_AGE_WEIGHT')
+            WHEN 'AUAT_BIG' THEN IF(man.age > woman.age,1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_AGE_WEIGHT')
+            WHEN 'AUAT_NOT_TO_MARRER' THEN (SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_AGE_WEIGHT') END
+            )
+            + (
+            CASE woman.want_love_history
+            WHEN 'AULHT_BLANK' THEN IF(man.love_history = 'AULHT_BLANK',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_EMOTION_WEIGHT')
+            WHEN 'AULHT_MORE_THAN_ONCE' THEN IF(man.love_history = 'AULHT_MORE_THAN_ONCE',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_EMOTION_WEIGHT')
+            WHEN 'AULHT_AN_EXPERIENCE' THEN IF(man.love_history = 'AULHT_AN_EXPERIENCE',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_EMOTION_WEIGHT')
+            WHEN 'AULHT_NOT_TO_MARRER' THEN (SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_EMOTION_WEIGHT') END
+            )
+            + (
+            CASE woman.want_character_type
+            WHEN 'AUCT_ART' THEN IF(man.character_type = 'AUCT_ART',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_ACHIEVEMENT' THEN IF(man.character_type = 'AUCT_ACHIEVEMENT',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_LEADER' THEN IF(man.character_type = 'AUCT_LEADER',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_HELP' THEN IF(man.character_type = 'AUCT_HELP',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_PREFECT' THEN IF(man.character_type = 'AUCT_PREFECT',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_ACTIVE' THEN IF(man.character_type = 'AUCT_ACTIVE',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_PEACE' THEN IF(man.character_type = 'AUCT_PEACE',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_DOUBT' THEN IF(man.character_type = 'AUCT_DOUBT',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT')
+            WHEN 'AUCT_REASON' THEN IF(man.character_type = 'AUCT_REASON',1,0)*(SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_CHARACTER_WEIGHT') END
+            )
+            +
+            6378.138 * 2 * ASIN(
+            SQRT(
+            POW(
+            SIN(
+            (
+            (SELECT us.latitude FROM t_ac_user us WHERE us.ac_user_id = woman.ac_user_id) * PI() / 180 - (SELECT us.latitude FROM t_ac_user us WHERE us.ac_user_id = man.ac_user_id) * PI() / 180
+            ) / 2
+            ),
+            2
+            ) + COS((SELECT us.latitude FROM t_ac_user us WHERE us.ac_user_id = woman.ac_user_id) * PI() / 180) * COS((SELECT us.latitude FROM t_ac_user us WHERE us.ac_user_id = man.ac_user_id) * PI() / 180) * POW(
+            SIN(
+            (
+            (SELECT us.longitude FROM t_ac_user us WHERE us.ac_user_id = woman.ac_user_id) * PI() / 180 - (SELECT us.longitude FROM t_ac_user us WHERE us.ac_user_id = man.ac_user_id) * PI() / 180
+            ) / 2
+            ),
+            2
+            )
+            )
+            ) * (SELECT pc.`value` FROM t_sy_para_conf pc WHERE pc.`key` = 'ACTIVITY_MATCHING_DISTANCE_WEIGHT')
+            - IF(
+            EXISTS(SELECT * FROM t_ac_cp_rel cp WHERE ((cp.req_user_id = woman.ac_user_id AND cp.res_user_id = man.ac_user_id)
+            OR (cp.res_user_id = woman.ac_user_id AND cp.req_user_id = man.ac_user_id)) AND cp.src_id != #{atRegisterId}),10000000,0)
+            ) AS feeling FROM t_at_wkcp_user man,t_at_wkcp_user woman WHERE man.at_register_id = #{atRegisterId}
+            AND man.sex != #{sex} AND man.match_no IS NULL AND woman.at_wkcp_user_id = #{atWkcpUserId} ORDER BY feeling DESC LIMIT 1
+    </select>
+
+    <select id="findActivityByRegisterIdAndSex" resultMap="ActivityResultMap">
+        SELECT woman.*,(
+                IF(id_verify_status = 1, 1, 0)*0.1
+                + IF(u.nickname IS NULL, 0, 1)*0.04
+                + IF(u.birthday IS NULL, 0, 1)*0.05
+                + IF(u.bd_business_id IS NULL, 0, 1)*0.03
+                + IF(u.bd_university_id IS NULL, 0, 1)*0.03
+                + IF(u.bd_degrees_id IS NULL, 0, 1)*0.03
+                + IF(u.signature IS NULL, 0, 1)*0.03
+                + IF(u.hometown IS NULL, 0, 1)*0.03
+                + IF(u.bd_city_id IS NULL, 0, 1)*0.03
+                + IF(u.longitude IS NULL, 0, 1)*0.01
+                + IF(u.latitude IS NULL, 0, 1)*0.01
+                +(SELECT COUNT(acu.ac_u_image_id) FROM t_ac_u_image acu WHERE acu.ac_user_id=u.ac_user_id AND acu.status=1)*0.05
+                +(SELECT COUNT(rel.ac_u_label_rel_id) FROM t_ac_u_label_rel rel LEFT JOIN t_ac_label label ON label.ac_label_id=rel.ac_label_id
+                 LEFT JOIN t_ac_label_ctgy ctgy ON ctgy.ac_label_ctgy_id=label.ac_label_ctgy_id WHERE ctgy.key='ULT_PERSONALITY' AND rel.ac_user_id=u.ac_user_id)*0.1
+                +(SELECT COUNT(rel.ac_u_label_rel_id) FROM t_ac_u_label_rel rel LEFT JOIN t_ac_label label ON label.ac_label_id=rel.ac_label_id
+                LEFT JOIN t_ac_label_ctgy ctgy ON ctgy.ac_label_ctgy_id=label.ac_label_ctgy_id WHERE ctgy.key != 'ULT_PERSONALITY' AND rel.ac_user_id=u.ac_user_id)*0.01
+                + IF(u.head_image_url = 'system/boy.png' OR u.head_image_url = 'system/girl.png', 0, 1)*0.1
+                )*100 as integrity FROM t_ac_user u,t_at_wkcp_user woman WHERE woman.`status` = 0 AND woman.sex = #{sex}
+                AND woman.at_register_id = #{atRegisterId} AND woman.ac_user_id = u.ac_user_id ORDER BY integrity DESC
+    </select>
+    
+    <update id="updateActivityAndRelByRegisterId">
+        UPDATE t_at_wkcp_user uw,t_t_ac_cp_rel cp SET uw. WHERE (cp.status = 'URS_CP_CONFIRM' OR cp.status = 'URS_CP_WAIT_MODIFY') AND cp.src_id = #{registerId}
+        AND cp.src_type='CST_WEEKCP' AND uw.at_register_id = cp.src_id
+    </update>
+
+    <select id="findMamNumAndWomanNum" resultType="java.lang.String">
+        SELECT
+        CONCAT(COUNT(CASE WHEN sex = 0 THEN sex END ),':',COUNT(CASE WHEN sex = 1 THEN sex END ))
+        FROM t_at_wkcp_user WHERE at_register_id = #{atRegisterId} AND `status` = 0
+    </select>
+
+    <update id="updateStatusByUserId">
+        UPDATE t_at_wkcp_user SET `status` = #{status} WHERE at_register_id = #{registerId} AND ac_user_id IN
+        <foreach collection="list" item="params" open="(" separator="," close=")">
+            #{params}
+        </foreach>
+    </update>
+
+</mapper>

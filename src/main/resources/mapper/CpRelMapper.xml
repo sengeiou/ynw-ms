@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.CpRelMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.CpRel">
+        <id column="ac_cp_rel_id" property="acCpRelId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="req_user_id" property="reqUserId"/>
+        <result column="res_user_id" property="resUserId"/>
+        <result column="src_type" property="srcType"/>
+        <result column="src_id" property="srcId"/>
+        <result column="status" property="status"/>
+        <association property="reqUserName" column="req_user_id" select="selectReqUserName"/>
+        <association property="resUserName" column="res_user_id" select="selectResUserName"/>
+        <association property="reqUserImId" column="req_user_id" select="selectReqUserImId"/>
+        <association property="resUserImId" column="res_user_id" select="selectResUserImId"/>
+        <collection property="matchNo" column="{res_user_id=res_user_id,src_id=src_id}" select="selectMatchNo"/>
+    </resultMap>
+
+    <select id="selectMatchNo" resultType="java.lang.String">
+        SELECT CONCAT(match_no,':',cp_no) FROM t_at_wkcp_user WHERE ac_user_id = #{res_user_id} AND at_register_id = #{src_id}
+    </select>
+
+    <select id="selectReqUserImId" resultType="java.lang.String">
+        SELECT im_user_id FROM t_ac_user WHERE ac_user_id = #{req_user_id}
+    </select>
+
+    <select id="selectResUserImId" resultType="java.lang.String">
+        SELECT im_user_id FROM t_ac_user WHERE ac_user_id = #{res_user_id}
+    </select>
+
+    <select id="selectReqUserName" resultType="java.lang.String">
+        SELECT nickname FROM t_ac_user WHERE ac_user_id = #{req_user_id}
+    </select>
+
+    <select id="selectResUserName" resultType="java.lang.String">
+        SELECT nickname FROM t_ac_user WHERE ac_user_id = #{res_user_id}
+    </select>
+
+    <select id="findByRegisterIdAndStatus" resultMap="commentResultMap">
+        SELECT * FROM t_ac_cp_rel WHERE src_id = #{registerId} AND src_type = 'CST_WEEKCP' AND `status` = 'URS_CP_CREATED'
+    </select>
+
+    <select id="findRelByPhone" resultMap="commentResultMap">
+    SELECT * FROM t_ac_cp_rel ra WHERE (ra.req_user_id IN (SELECT ua.ac_user_id FROM t_ac_user ua WHERE ua.phone_number=#{phone})
+    OR ra.res_user_id IN (SELECT ua.ac_user_id FROM t_ac_user ua WHERE ua.phone_number=#{phone})) AND ra.status IN ('URS_CP_CREATED') LIMIT 0,1
+  </select>
+
+    <select id="findCpRelByUserIdOrStatus" resultMap="commentResultMap">
+        SELECT * FROM t_ac_cp_rel WHERE (req_user_id=#{userId} OR res_user_id=#{userId}) AND `status`=#{status}
+    </select>
+
+    <select id="findByRegisterIdOrStatus" resultMap="commentResultMap">
+        SELECT * FROM t_ac_cp_rel WHERE (`status` = 'URS_CP_CONFIRM' OR `status` = 'URS_CP_WAIT_MODIFY' OR `status` = 'URS_CP_WAIT_RELIEVE') AND src_id = #{registerId} AND src_type='CST_WEEKCP'
+    </select>
+
+    <update id="updateByRegisterIdOrStatus">
+        UPDATE t_ac_cp_rel SET `status` = 'URS_CP_DELETED',create_time = NOW() WHERE (`status` = 'URS_CP_CONFIRM' OR `status` = 'URS_CP_WAIT_MODIFY' OR `status` = 'URS_CP_WAIT_RELIEVE')
+        AND src_id = #{registerId} AND src_type='CST_WEEKCP'
+    </update>
+
+    <select id="findByReqUserIdAndResUserIdAndRegisterId" resultMap="commentResultMap">
+        SELECT * FROM t_ac_cp_rel WHERE ((req_user_id = #{reqUserId} AND res_user_id = #{resUserId})
+        OR (res_user_id = #{reqUserId} AND req_user_id = #{resUserId})) AND src_type = 'CST_WEEKCP' AND src_id = #{registerId}
+    </select>
+
+    <update id="batchUpdateStatus">
+        UPDATE t_ac_cp_rel SET status = #{status} WHERE ac_cp_rel_id IN
+        <foreach collection="list" item="params" open="(" separator="," close=")">
+            #{params.acCpRelId}
+        </foreach>
+    </update>
+
+    <select id="findByReqUserIdAndResUserId" resultMap="commentResultMap">
+        SELECT * FROM t_ac_cp_rel WHERE (req_user_id = #{reqUserId} AND res_user_id = #{resUserId}) OR (req_user_id = #{resUserId}
+        AND res_user_id = #{reqUserId}) ORDER BY create_time DESC LIMIT 1
+    </select>
+
+    <insert id="insertByBatch">
+        INSERT INTO t_ac_cp_rel (ac_cp_rel_id,req_user_id,res_user_id,src_type,src_id,`status`,create_time) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.acCpRelId},#{item.reqUserId},#{item.resUserId},#{item.srcType},#{item.srcId},#{item.status},#{item.createTime})
+        </foreach>
+    </insert>
+
+    <update id="updateByConfirmCp">
+        UPDATE t_ac_cp_rel cp,(SELECT au.ac_user_id FROM t_at_wkcp_user au WHERE au.at_register_id = #{registerId} AND au.match_no IS NOT NULL
+        AND au.confirm_cp = 0) us SET cp.status = 'URS_CP_DELETED' WHERE (cp.req_user_id = us.ac_user_id OR cp.res_user_id = us.ac_user_id)
+        AND cp.status != 'URS_CP_DELETED' AND src_id = #{registerId}
+    </update>
+
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.ImGroupMapper">
+    <resultMap id="BaseResultMap" type="com.ynw.system.entity.ImGroup">
+        <id column="im_group_id" jdbcType="VARCHAR" property="imGroupId" />
+        <result column="hx_group_id" jdbcType="VARCHAR" property="hxGroupId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="match_no" jdbcType="TINYINT" property="matchNo" />
+        <!--<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />-->
+    </resultMap>
+    <select id="findNowByRegisterId" resultMap="BaseResultMap">
+        SELECT * FROM t_im_group WHERE business_type = #{businessType} AND business_id = #{businessId} AND `status` = #{status}
+        ORDER BY create_time DESC
+    </select>
+    <select id="findTest" resultMap="BaseResultMap">
+        select * from t_im_group where business_id = '022b7547d8f64b120190320173408521' and status = 1 and use_type = 1
+    </select>
+    <select id="findAllByRegisterId" resultType="java.lang.String">
+        SELECT hx_group_id FROM  t_im_group WHERE business_id = #{businessId} AND `status` = #{status} AND business_type = #{businessType}
+    </select>
+
+    <select id="findByUserId" resultMap="BaseResultMap">
+        SELECT * FROM t_im_group ig WHERE ig.im_group_id IN (SELECT igm.im_group_id FROM t_im_group_member igm WHERE igm.member_id = #{userId})
+        AND ig.use_type = #{useType} AND ig.business_id = #{registerId} AND ig.status = 1
+    </select>
+</mapper>

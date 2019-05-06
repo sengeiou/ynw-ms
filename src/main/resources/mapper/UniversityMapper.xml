@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.UniversityMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.University">
+        <id column="bd_university_id" property="bdUniversityId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="name" property="name"/>
+        <result column="bd_city_id" property="bdCityId"/>
+    </resultMap>
+    <resultMap id="UniversityResultMap" type="com.ynw.system.entity.University" extends="commentResultMap">
+        <association property="city" column="bd_city_id" select="selectCityName"/>
+        <association property="province" column="bd_city_id" select="selectProvinceName"/>
+        <association property="provinceId" column="bd_city_id" select="selectProvinceId"/>
+    </resultMap>
+    <resultMap id="findByProvinceIdUniversityResultMap" type="com.ynw.system.entity.University" extends="commentResultMap">
+        <!--<association property="city" column="bd_city_id" select="selectCityId"/>-->
+        <association property="province" column="bd_city_id" select="selectProvinceId"/>
+    </resultMap>
+
+    <!--<select id="selectProvinceId" resultType="java.lang.String">-->
+      <!--SELECT * FROM t_bd_city WHERE bd_city_id=#{bd_city_id}-->
+    <!--</select>-->
+    <select id="selectProvinceId" resultType="java.lang.String">
+      SELECT bp.bd_province_id FROM t_bd_province bp JOIN t_bd_city bc ON bp.bd_province_id=bc.bd_province_id
+      WHERE bc.bd_city_id=#{bd_city_id}
+    </select>
+
+    <select id="selectCityName" resultType="java.lang.String">
+      SELECT name FROM t_bd_city WHERE bd_city_id=#{bd_city_id}
+    </select>
+    <select id="selectProvinceName" resultType="java.lang.String">
+      SELECT bp.province_name FROM t_bd_province bp JOIN t_bd_city bc ON bp.bd_province_id=bc.bd_province_id
+      WHERE bc.bd_city_id=#{bd_city_id}
+    </select>
+
+    <select id="conditionQueryUniversity" resultMap="UniversityResultMap">
+        SELECT * FROM t_bd_university bu
+        <where>
+            <if test="null != university.name">
+                bu.name LIKE CONCAT('%',#{university.name},'%')
+            </if>
+            <if test="null != university.city || null != university.province">
+                AND bu.bd_city_id IN (SELECT bc.bd_city_id FROM t_bd_city bc
+                <where>
+                    <if test="null != university.city">
+                        bc.bd_city_id LIKE CONCAT('%',#{university.city},'%')
+                    </if>
+                    <if test="null != university.province">
+                        AND bc.bd_province_id LIKE CONCAT('%',#{university.province},'%')
+                    </if>
+                </where>)
+            </if>
+        </where>
+        ORDER BY bu.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(bu.bd_university_id) FROM t_bd_university bu
+        <where>
+            <if test="null != name">
+                bu.name LIKE CONCAT('%',#{name},'%')
+            </if>
+            <if test="null != city || null != province">
+                AND bu.bd_city_id IN (SELECT bc.bd_city_id FROM t_bd_city bc
+                <where>
+                    <if test="null != city">
+                        bc.bd_city_id LIKE CONCAT('%',#{city},'%')
+                    </if>
+                    <if test="null != province">
+                        AND bc.bd_province_id LIKE CONCAT('%',#{province},'%')
+                    </if>
+                </where>)
+            </if>
+        </where>
+    </select>
+    <select id="findById" resultMap="findByProvinceIdUniversityResultMap">
+        SELECT * FROM t_bd_university WHERE bd_university_id=#{bdUniversityId}
+    </select>
+</mapper>

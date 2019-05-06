@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.RadarSubjectMapper">
+    <resultMap id="generalDutyResultMap" type="com.ynw.system.entity.RadarSubject">
+        <id column="rs_subject_id" property="rsSubjectId"/>
+        <result column="content" property="content"/>
+        <result column="type" property="type"/>
+        <result column="from_type" property="fromType"/>
+        <result column="ac_user_id" property="acUserId"/>
+        <result column="applied" property="applied"/>
+        <result column="create_time" property="createTime"/>
+        <result column="sort" property="sort"/>
+    </resultMap>
+    <resultMap id="radarSubjectResultMap" type="com.ynw.system.entity.RadarSubject" extends="generalDutyResultMap">
+        <association property="typeName" column="type" select="selectTypeName"/>
+        <association property="userName" column="ac_user_id" select="selectUserName"/>
+    </resultMap>
+
+    <select id="selectTypeName" resultType="java.lang.String">
+        SELECT item_value FROM t_sy_dictionary WHERE item_key=#{type}
+    </select>
+    <select id="selectUserName" resultType="java.lang.String">
+        SELECT nickname FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+
+    <select id="conditionQueryRadarSubject" resultMap="radarSubjectResultMap">
+        SELECT * FROM t_rs_subject rs
+        <where>
+            <if test="null != subject.type">
+                rs.type LIKE CONCAT('%',#{subject.type},'%')
+            </if>
+            <if test="null != subject.fromType">
+                AND rs.from_type LIKE CONCAT('%',#{subject.fromType},'%')
+            </if>
+            <if test="null != subject.applied">
+                AND rs.applied LIKE CONCAT('%',#{subject.applied},'%')
+            </if>
+            <if test="null != subject.userName">
+                AND rs.ac_user_id IN (SELECT ua.ac_user_id FROM t_ac_user ua WHERE ua.nickname LIKE CONCAT('%',#{subject.userName},'%'))
+            </if>
+        </where>
+        ORDER BY rs.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(rs.rs_subject_id) FROM t_rs_subject rs
+        <where>
+            <if test="null != type">
+                rs.type LIKE CONCAT('%',#{type},'%')
+            </if>
+            <if test="null != fromType">
+                AND rs.from_type LIKE CONCAT('%',#{fromType},'%')
+            </if>
+            <if test="null != applied">
+                AND rs.applied LIKE CONCAT('%',#{applied},'%')
+            </if>
+            <if test="null != userName">
+                AND rs.ac_user_id IN (SELECT ua.ac_user_id FROM t_ac_user ua WHERE ua.nickname LIKE CONCAT('%',#{userName},'%'))
+            </if>
+        </where>
+    </select>
+    <select id="findBySortMax" resultMap="generalDutyResultMap">
+        SELECT * FROM t_rs_subject
+         <where>
+             from_type = #{fromType}
+             <if test="null != acUserId">
+                 AND ac_user_id = #{acUserId}
+             </if>
+         </where>
+         ORDER BY sort DESC
+    </select>
+</mapper>

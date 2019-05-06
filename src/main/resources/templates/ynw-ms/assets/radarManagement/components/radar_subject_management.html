@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title> - 数据表格</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="../../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+
+    <link href="../../css/animate.css" rel="stylesheet">
+    <link href="../../css/style.css?v=4.1.0" rel="stylesheet">
+
+    <script type="text/javascript" src="../../../js/jquery.js"></script>
+    <script type="text/javascript" src="radar_subject.js"></script>
+    <script type="text/javascript" src="../../js/getDate.js"></script>
+    <link rel="stylesheet" href="../../../css/page/easyhelper.min.css">
+    <!--<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"></script>-->
+    <script src="../../js/jquery-3.3.1.min.js"></script>
+    <script src="../../../js/page/jquery.transit.min.js"></script>
+    <script src="../../../js/page/es6-shim.min.js"></script>
+    <script src="../../../js/page/easyhelper.min.js"></script>
+    <script src="../../../js/page/comment.js"></script>
+    <script type="text/javascript" src="../../../js/layer-v3.0.3/layer/layer.js"></script>
+    <link rel="stylesheet" href="../../../css/comment.css">
+    <style>
+        #nowPage-date {
+            width: 420px;
+            height: 350px;
+            border: 1px solid black;
+            margin-left: 30%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 5;
+            background: white;
+            display: none;
+        }
+        .nowPage-left {
+            width: 55%;
+            height: 260px;
+            margin: 20px;
+            border: 1px solid black;
+            float: left;
+            overflow: hidden;
+            overflow-y:scroll;
+        }
+        .nowPage-right {
+            width: 25%;
+            height: 260px;
+            float: right;
+            margin: 20px;
+        }
+        .nowPage-right input {
+            width: 60px;
+            margin-bottom: 10px;
+        }
+        .unified-closed {
+            width: 40%;
+            height: 500px;
+            border: 1px solid black;
+            margin-left: 30%;
+            position: fixed;
+            z-index: 101;
+            background: white;
+            margin-top: 80px;
+            display: none;
+            font-size: 1vw;
+        }
+        .unified-closed-body {
+            width: 60%;
+            height: 60%;
+            margin-left: 20%;
+        }
+        .unified-closed-body div {
+            width: 100%;
+            height: 10%;
+            margin-top: 4%;
+        }
+        .unified-closed-body select{
+            width: 50%;
+            height: 100%;
+            float: right;
+            border-radius: 5px;
+        }
+        .unified-closed-body textarea {
+            width: 50%;
+            height: 30%;
+            float: right;
+        }
+        .data-button {
+            width: 68%;
+            margin-left: 15%;
+            margin-top: 8%;
+        }
+        .data-button input {
+            margin-left: 20%;
+            width: 15%;
+        }
+        .general-delete {
+            width: 40%;
+            height: 300px;
+            border: 1px solid black;
+            margin-left: 30%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 5;
+            background: white;
+            display: none;
+        }
+        .role-delete-body {
+            margin: 20px;
+            text-align: center;
+            font-size: 18px;
+            height: 40%;
+        }
+        .operation-data {
+            width: 40%;
+            height: 300px;
+            border: 1px solid black;
+            margin-left: 30%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 6;
+            background: white;
+            display: none;
+            font-size: 1vw;
+        }
+        .role-body {
+            margin-left: 20%;
+            margin-top: 8%;
+            width: 60%;
+            height: 25%;
+        }
+        .role-body input {
+            width: 40%;
+            float: right;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <!--添加题目-->
+    <div class="unified-closed" id="add-radar-subject">
+        <div class="data-top">添加题目</div>
+        <div class="unified-closed-body">
+            <div>
+                *题目类型：
+                <select name="type">
+                    <option value="">--请选择--</option>
+                </select>
+            </div>
+            <div>
+                *题目出处：
+                <select name="fromType">
+                    <option value="">--请选择--</option>
+                    <option value="0">--系统--</option>
+                    <option value="1">--用户自定义--</option>
+                </select>
+            </div>
+            <div>
+                *出题人：
+                <select name="acUserId">
+                    <option value="">--请选择--</option>
+                </select>
+            </div>
+            <div>
+                *适用范围：
+                <select name="applied">
+                    <option value="">--请选择--</option>
+                    <option value="0">--适用男生回答--</option>
+                    <option value="1">--适用女生回答--</option>
+                    <option value="2">--男女生都适用--</option>
+                </select>
+            </div>
+            *题目内容:<textarea name="content"></textarea>
+        </div>
+        <div class="data-button">
+            <input id="add-radar-subject-confirm" type="button" value="确定"/>
+            <input class="cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--编辑题目-->
+    <div class="unified-closed" id="update-radar-subject">
+        <div class="data-top">编辑题目</div>
+        <div class="unified-closed-body">
+            <div>
+                *题目类型：
+                <select name="type">
+                    <option value="">--请选择--</option>
+                </select>
+            </div>
+            <div>
+                *题目出处：
+                <select name="fromType">
+                    <option value="">--请选择--</option>
+                    <option value="0">--系统--</option>
+                    <option value="1">--用户自定义--</option>
+                </select>
+            </div>
+            <div>
+                *出题人：
+                <select name="acUserId">
+                    <option value="">--请选择--</option>
+                </select>
+            </div>
+            <div>
+                *适用范围：
+                <select name="applied">
+                    <option value="">--请选择--</option>
+                    <option value="0">--适用男生回答--</option>
+                    <option value="1">--适用女生回答--</option>
+                    <option value="2">--男女生都适用--</option>
+                </select>
+            </div>
+            *题目内容:<textarea name="content" maxlength="50"></textarea>
+        </div>
+        <div class="data-button">
+            <input id="update-radar-subject-confirm" type="button" value="确定"/>
+            <input class="cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--删除题目-->
+    <div class="general-delete" id="delete-subject">
+        <div class="data-top">删除</div>
+        <div class="role-delete-body">
+            您确定要删除题目【<span></span>】吗？
+        </div>
+        <div class="button data-button">
+            <input id="delete-subject-confirm" type="button" value="确定"/>
+            <input class="cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--雷达搜题目选项管理-->
+    <div id="nowPage-date">
+        <div class="data-top">雷达搜题目选项管理</div>
+        <div>
+            <div class="nowPage-left">
+                <select style="width: 110%">
+
+                </select>
+            </div>
+            <div class="nowPage-right">
+                <!--<input type="button" value="新增">-->
+                <!--<input type="button" value="编辑">-->
+                <!--<input type="button" value="删除">-->
+                <!--<input type="button" value="上移">-->
+                <!--<input type="button" value="下移">-->
+                <!--<input class="cancel" type="button" value="退出">-->
+            </div>
+        </div>
+    </div>
+
+    <!--添加雷达搜题目选项-->
+    <div class="operation-data" id="add-subject-item">
+        <div class="data-top">添加雷达搜题目选项</div>
+        <div class="role-body" id="add-label-classify">
+            雷达搜题目选项内容：<input name="content" maxlength="10" type="text"/><br/>
+        </div>
+        <div class="data-button">
+            <input id="add-subject-item-confirm" type="button" value="确定"/>
+            <input class="report-cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--编辑雷达搜题目选项-->
+    <div class="operation-data" id="update-subject-item">
+        <div class="data-top">编辑雷达搜题目选项</div>
+        <div class="role-body">
+            雷达搜题目选项内容：<input name="content" maxlength="10" type="text"/><br/>
+        </div>
+        <div class="data-button">
+            <input id="update-subject-item-confirm" type="button" value="确定"/>
+            <input class="report-cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <!--删除题目-->
+    <div class="general-delete" id="delete-subject-item">
+        <div class="data-top">删除</div>
+        <div class="role-delete-body">
+            您确定要删除题目选项【<span></span>】吗？
+        </div>
+        <div class="button data-button">
+            <input id="delete-subject-item-confirm" type="button" value="确定"/>
+            <input class="report-cancel" type="button" value="取消"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>雷达搜题库管理
+                        <!--<small>分类，查找</small>-->
+                    </h5>
+                    <div class="ibox-tools">
+                        <input id="userId" type="hidden" th:value="${msUserId}">
+                        <input id="resourceId" type="hidden" th:value="${msResourceId}"/>
+                        <input id="URL" type="hidden" th:value="${URL}"/>
+                    </div>
+                </div>
+                <div class="screen">
+                    <div >
+                        <h1>出题人姓名</h1>
+                        <input id="userName" type="text"/>
+                    </div>
+                    <div>
+                        <h1>题目类型</h1>
+                        <select id="type">
+                            <option value="">--请选择--</option>
+                        </select>
+                    </div>
+                    <div>
+                        <h1>题目出处</h1>
+                        <select id="fromType">
+                            <option value="">--请选择--</option>
+                            <option value="0">--系统--</option>
+                            <option value="1">--用户自定义--</option>
+                        </select>
+                    </div>
+                    <div>
+                        <h1>适用范围</h1>
+                        <select id="applied">
+                            <option value="">--请选择--</option>
+                            <option value="0">--适用男生回答--</option>
+                            <option value="1">--适用女生回答--</option>
+                            <option value="2">--男女生都适用--</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div id="bottom-left">
+                    </div>
+                    <div id="bottom-right">
+                    </div>
+                    <div class="bottom_manage">
+                    </div>
+                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox" id="checkAll"></th>
+                            <th>题目类型</th>
+                            <th>题目出处</th>
+                            <th>出题人</th>
+                            <th>答题范围</th>
+                            <th>题目内容</th>
+                            <th>排序</th>
+                            <th>创建时间</th>
+                            <!--<th>操作</th>-->
+                        </tr>
+                        </thead>
+                        <tbody id="report">
+                        </tbody>
+                    </table>
+                    <!--<div class="content">-->
+                        <!--<ul>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                    <div class="page" id="page" style="text-align:center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="../../js/jquery.min.js?v=2.1.4"></script>
+<script src="../../js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<script src="../../js/plugins/jeditable/jquery.jeditable.js"></script>
+
+<!-- 自定义js -->
+<script src="../../js/content.js?v=1.0.0"></script>
+
+
+</body>
+
+</html>

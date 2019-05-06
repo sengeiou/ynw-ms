@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.SweetsFlowMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.SweetsFlow">
+        <id column="ac_sugar_flow_id" property="acSugarFlowId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="ac_user_id" property="acUserId"/>
+        <result column="quantity" property="quantity"/>
+        <result column="type" property="type"/>
+        <result column="asso_business_id" property="assoBusinessId"/>
+        <result column="asso_business_key" property="assoBusinessKey"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="alipay_account" property="alipayAccount"/>
+        <result column="alipay_code" property="alipayCode"/>
+        <result column="real_name" property="realName"/>
+        <association property="userName" column="ac_user_id" select="selectUserName"/>
+        <association property="userPhone" column="ac_user_id" select="selectUserPhone"/>
+        <association property="userImg" column="ac_user_id" select="selectUserImg"/>
+        <association property="businessKeyValue" column="asso_business_key" select="selectBusinessValue"/>
+        <association property="sum" column="ac_user_id" select="selectUserSum"/>
+    </resultMap>
+
+    <select id="selectUserSum" resultType="java.lang.Integer">
+        SELECT `sum` FROM t_ac_sugar_sum WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserImg" resultType="java.lang.String">
+      SELECT head_image_url FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserPhone" resultType="java.lang.String">
+      SELECT phone_number FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectUserName" resultType="java.lang.String">
+      SELECT nickname FROM t_ac_user WHERE ac_user_id=#{ac_user_id}
+    </select>
+    <select id="selectBusinessValue" resultType="java.lang.String">
+      SELECT item_value FROM t_sy_dictionary WHERE item_key=#{asso_business_key}
+    </select>
+
+    <select id="findById" resultMap="commentResultMap">
+        SELECT * FROM t_ac_sugar_flow WHERE ac_sugar_flow_id = #{acSugarFlowId}
+    </select>
+    <select id="conditionQuerySweetsFlow" resultMap="commentResultMap">
+        SELECT * FROM t_ac_sugar_flow sf
+        <where>
+            <if test="null != sweetsFlow.userName || null != sweetsFlow.userPhone">
+                sf.ac_user_id IN (SELECT au.ac_user_id FROM t_ac_user au
+                <where>
+                    <if test="null != sweetsFlow.userPhone">
+                        au.phone_number LIKE CONCAT('%',#{sweetsFlow.userPhone},'%')
+                    </if>
+                    <if test="null != sweetsFlow.userName">
+                        AND au.nickname LIKE CONCAT('%',#{sweetsFlow.userName},'%')
+                    </if>
+                </where>
+                )
+            </if>
+            <if test="null != sweetsFlow.type">
+                AND sf.type LIKE CONCAT('%',#{sweetsFlow.type},'%')
+            </if>
+            <if test="null != sweetsFlow.assoBusinessKey">
+                AND sf.asso_business_key LIKE CONCAT('%',#{sweetsFlow.assoBusinessKey},'%')
+            </if>
+            <if test="null != beginDate">
+                AND sf.create_time > #{beginDate}
+            </if>
+            <if test="null != endDate">
+                AND sf.create_time <![CDATA[< ]]> #{endDate}
+            </if>
+        </where>
+        ORDER BY sf.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(sf.ac_sugar_flow_id) FROM t_ac_sugar_flow sf
+        <where>
+            <if test="null != sweetsFlow.userName || null != sweetsFlow.userPhone">
+                sf.ac_user_id IN (SELECT au.ac_user_id FROM t_ac_user au
+                <where>
+                    <if test="null != sweetsFlow.userPhone">
+                        au.phone_number LIKE CONCAT('%',#{sweetsFlow.userPhone},'%')
+                    </if>
+                    <if test="null != sweetsFlow.userName">
+                        AND au.nickname LIKE CONCAT('%',#{sweetsFlow.userName},'%')
+                    </if>
+                </where>
+                )
+            </if>
+            <if test="null != sweetsFlow.type">
+                AND sf.type LIKE CONCAT('%',#{sweetsFlow.type},'%')
+            </if>
+            <if test="null != sweetsFlow.assoBusinessKey">
+                AND sf.asso_business_key LIKE CONCAT('%',#{sweetsFlow.assoBusinessKey},'%')
+            </if>
+            <if test="null != beginDate">
+                AND sf.create_time > #{beginDate}
+            </if>
+            <if test="null != endDate">
+                AND sf.create_time <![CDATA[< ]]> #{endDate}
+            </if>
+        </where>
+    </select>
+
+    <!--<insert id="insertByBatch">-->
+        <!--INSERT INTO t_ac_cp_flow (ac_cp_flow_id,ac_cp_rel_id,req_user_id,res_user_id,src_type,src_id,`status`,create_time) VALUES-->
+        <!--<foreach collection="list" item="item" index="index" separator=",">-->
+            <!--(#{item.acCpFlowId},#{item.acCpRelId},#{item.reqUserId},#{item.resUserId},#{item.srcType},#{item.srcId},#{item.status},#{item.createTime})-->
+        <!--</foreach>-->
+    <!--</insert>-->
+</mapper>

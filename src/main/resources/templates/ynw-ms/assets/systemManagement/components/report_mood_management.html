@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title> - 数据表格</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="../../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+
+    <link href="../../css/animate.css" rel="stylesheet">
+    <link href="../../css/style.css?v=4.1.0" rel="stylesheet">
+
+    <script type="text/javascript" src="../../../js/jquery.js"></script>
+    <script type="text/javascript" src="report_mood.js"></script>
+    <script type="text/javascript" src="../../js/getDate.js"></script>
+    <link rel="stylesheet" href="../../../css/page/easyhelper.min.css">
+    <!--<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"></script>-->
+    <script src="../../js/jquery-3.3.1.min.js"></script>
+    <script src="../../../js/page/jquery.transit.min.js"></script>
+    <script src="../../../js/page/es6-shim.min.js"></script>
+    <script src="../../../js/page/easyhelper.min.js"></script>
+    <script src="../../../js/page/comment.js"></script>
+    <script type="text/javascript" src="../../../js/layer-v3.0.3/layer/layer.js"></script>
+    <link rel="stylesheet" href="../../../css/comment.css">
+    <style>
+        #add-role select {
+            width: 200px;
+            height: 90%;
+        }
+        .delete-button input {
+            margin-left: 10%;
+        }
+        .nowPage-right input {
+            width: 60px;
+            margin-bottom: 10px;
+        }
+        .role-body input {
+            margin: 10px;
+        }
+        .data-button input {
+            margin-left: 10%;
+        }
+        .exam-body select {
+            width: 200px;
+            height: 30px;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        .unified-closed {
+            width: 40%;
+            height: 500px;
+            border: 1px solid black;
+            margin-left: 30%;
+            margin-top: 90px;
+            position: fixed;
+            z-index: 6;
+            background: white;
+            display: none;
+        }
+        .report-body {
+            width: 80%;
+            height: 70%;
+            margin: 0px auto;
+            overflow: hidden;
+        }
+        .report-body-content {
+            width: 103%;
+            height: 100%;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+        .report-body-content-item {
+            width: 99%;
+            height: 10%;
+            font-size: 1vw;
+            margin-top: 1%;
+        }
+        .report-body-content-item div {
+            width: 30%;
+            height: 100%;
+            line-height: 35px;
+            float: left;
+            /*文字超出部分省略号表示*/
+            overflow: hidden;
+            text-overflow:ellipsis;
+            white-space: nowrap;
+        }
+        .button {
+            width: 80%;
+            height: 20%;
+            margin: 0px auto;
+        }
+        .button input {
+            width: 15%;
+            margin-top: 6%;
+            margin-left: 20%;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <input class="back" type="button" value="返回" style="width: 100px"/>
+    <div class="unified-closed">
+        <div class="data-top">举报人预览</div>
+        <div class="report-body">
+            <div class="report-body-content">
+                <!--<div class="report-body-content-item">-->
+                    <!--<div>啦啦啦</div>-->
+                    <!--<div>垃圾广告信息</div>-->
+                    <!--<div>2019-01-26 16:40:35</div>-->
+                <!--</div>-->
+            </div>
+        </div>
+        <div class="button">
+            <input class="cancel" type="button" value="确定"/>
+            <input class="cancel" type="button" value="取消"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>话题信息列表
+                        <!--<small>分类，查找</small>-->
+                    </h5>
+                    <div class="ibox-tools">
+                        <input id="userId" type="hidden" th:value="${msUserId}">
+                        <input id="resourceId" type="hidden" th:value="${msResourceId}"/>
+                        <input id="name" type="hidden" th:value="${name}">
+                        <input id="phone" type="hidden" th:value="${phone}">
+                        <input id="syReportCtgyId" type="hidden" th:value="${syReportCtgyId}">
+                        <input id="targetType" type="hidden" th:value="${targetType}">
+                        <input id="status" type="hidden" th:value="${status}">
+                        <input id="num" type="hidden" th:value="${num}">
+                    </div>
+                </div>
+                <div class="screen">
+                    <div >
+                        <h1>用户名</h1>
+                        <input id="userName" type="text"/>
+                    </div>
+                    <div >
+                        <h1>用户手机号</h1>
+                        <input id="userPhone" type="text" oninput = "value=value.replace(/[^\d]/g,'')" maxlength="11"/>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div id="bottom-left">
+                    </div>
+                    <div id="bottom-right">
+                        <input id="screen_date" type="button" value="筛选">
+                        <input id="refresh_date" type="button" value="刷新">
+                    </div>
+                    <div class="bottom_manage">
+                    </div>
+                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                        <thead>
+                        <tr>
+                            <th>用户头像</th>
+                            <th>用户昵称</th>
+                            <th>用户手机号</th>
+                            <th>话题标签</th>
+                            <th>被举报数</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="report">
+                        </tbody>
+                    </table>
+                    <div class="page" id="page" style="text-align:center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="../../js/jquery.min.js?v=2.1.4"></script>
+<script src="../../js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<script src="../../js/plugins/jeditable/jquery.jeditable.js"></script>
+
+<!-- 自定义js -->
+<script src="../../js/content.js?v=1.0.0"></script>
+
+
+</body>
+
+</html>

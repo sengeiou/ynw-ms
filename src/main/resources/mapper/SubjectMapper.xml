@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.SubjectMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Subject">
+        <id column="kb_subject_id" property="kbSubjectId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="content" property="content"/>
+        <result column="sort" property="sort"/>
+        <result column="path_type" property="pathType"/>
+        <result column="kb_exampaper_id" property="kbExampaperId"/>
+    </resultMap>
+    <resultMap id="subjectResultMap" type="com.ynw.system.entity.Subject" extends="commentResultMap">
+        <association property="subjectItemList" column="kb_subject_id" select="selectSubjectItemListBySubjectId"/>
+    </resultMap>
+
+    <resultMap id="subjectItemResultMap" type="com.ynw.system.entity.SubjectItem">
+        <id column="kb_subject_item_id" property="kbSubjectItemId"/>
+        <result column="content" property="content"/>
+    </resultMap>
+
+    <select id="selectSubjectItemListBySubjectId" resultMap="subjectItemResultMap">
+        SELECT * FROM t_kb_subject_item WHERE kb_subject_id=#{kb_subject_id} ORDER BY sort ASC
+    </select>
+
+    <select id="conditionQuerySubject" resultMap="subjectResultMap">
+        SELECT * FROM t_kb_subject WHERE kb_exampaper_id=#{kbExampaperId}
+        ORDER BY sort ASC
+    </select>
+    <select id="findBySortMax" resultMap="commentResultMap">
+        SELECT * FROM t_kb_subject WHERE kb_exampaper_id=#{kbExampaperId} ORDER BY sort DESC LIMIT 0,1
+    </select>
+    <select id="findByExamIdAndSort" resultMap="commentResultMap">
+        SELECT * FROM t_kb_subject WHERE kb_exampaper_id=#{kbExampaperId} AND sort > #{sort} ORDER BY sort ASC
+    </select>
+</mapper>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.RoleMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.Role">
+        <id column="ms_role_id" property="msRoleId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="name" property="name"/>
+        <result column="role_key" property="roleKey"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    <resultMap id="roleRoleResultMap" type="com.ynw.system.entity.Role" extends="commentResultMap">
+        <association property="resourceList" column="ms_role_id" select="selectResourceByRoleId"/>
+    </resultMap>
+    <resultMap id="ResourceResultMap" type="com.ynw.system.entity.Resource">
+        <id column="ms_resource_id" property="msResourceId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="description" property="description"/>
+        <result column="is_hide" property="isHide"/>
+        <result column="level" property="level"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+        <result column="source_key" property="sourceKey"/>
+        <result column="source_url" property="sourceUrl"/>
+        <result column="type" property="type"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="parent_id" property="parentId"/>
+    </resultMap>
+    <sql id="findResourceSQL">
+        mr.ms_resource_id, mr.create_time, mr.description, mr.is_hide, mr.level, mr.name, mr.sort, mr.source_key, mr.source_url, mr.type, mr.update_time, mr.parent_id
+    </sql>
+    <select id="selectResourceByRoleId" resultMap="ResourceResultMap">
+        SELECT <include refid="findResourceSQL" /> FROM t_ms_resource mr JOIN t_ms_role_resource mrs ON mr.ms_resource_id=mrs.ms_resource_id WHERE mrs.ms_role_id=#{ms_role_id}
+    </select>
+    <sql id="commentSQL">
+        mr.ms_role_id, mr.create_time, mr.name, mr.role_key, mr.update_time
+    </sql>
+    <select id="findRoleByUserId" resultMap="roleRoleResultMap">
+        SELECT <include refid="commentSQL" /> FROM t_ms_role mr JOIN  t_ms_user_role mur
+        ON mr.ms_role_id=mur.ms_role_id WHERE mur.ms_user_id=#{msUserId}
+    </select>
+    <select id="conditionQueryRole" resultMap="commentResultMap">
+        SELECT <include refid="commentSQL" /> FROM t_ms_role mr
+        <where>
+            <if test="null != role.name">
+                mr.name LIKE CONCAT('%',#{role.name},'%')
+            </if>
+            <if test="null != role.roleKey">
+                AND mr.role_key LIKE CONCAT('%',#{role.roleKey},'%')
+            </if>
+            <if test="null != role.msRoleId">
+                AND mr.ms_role_id != '5b64f7f5f46d42e20181126180130773'
+            </if>
+        </where>
+        ORDER BY mr.create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <!-- 统计符合条件的数据 -->
+    <select id="count" resultType="int">
+        SELECT COUNT(mr.ms_role_id) FROM t_ms_role mr
+        <where>
+            <if test="null != name">
+                mr.name LIKE CONCAT('%',#{name},'%')
+            </if>
+            <if test="null != roleKey">
+                AND mr.role_key LIKE CONCAT('%',#{roleKey},'%')
+            </if>
+            <if test="null != msRoleId">
+                AND mr.ms_role_id != '5b64f7f5f46d42e20181126180130773'
+            </if>
+        </where>
+    </select>
+    <select id="findAll" resultMap="commentResultMap">
+        SELECT * FROM t_ms_role mr WHERE mr.ms_role_id!= '5b64f7f5f46d42e20181126180130773'
+    </select>
+
+    <select id="findById" resultMap="commentResultMap">
+        SELECT <include refid="commentSQL" /> FROM t_ms_role WHERE ms_role_id = #{roleId}
+    </select>
+</mapper>

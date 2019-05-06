@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.CpFlowMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.CpFlow">
+        <id column="bd_city_id" property="acCpFlowId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="req_user_id" property="reqUserId"/>
+        <result column="res_user_id" property="resUserId"/>
+        <result column="src_type" property="srcType"/>
+        <result column="src_id" property="srcId"/>
+        <result column="status" property="status"/>
+        <result column="ac_cp_rel_id" property="acCpRelId"/>
+    </resultMap>
+
+    <insert id="insertByBatch">
+        INSERT INTO t_ac_cp_flow (ac_cp_flow_id,ac_cp_rel_id,req_user_id,res_user_id,src_type,src_id,`status`,create_time) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.acCpFlowId},#{item.acCpRelId},#{item.reqUserId},#{item.resUserId},#{item.srcType},#{item.srcId},#{item.status},#{item.createTime})
+        </foreach>
+    </insert>
+</mapper>

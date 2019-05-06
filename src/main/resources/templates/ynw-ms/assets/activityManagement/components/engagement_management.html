@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title> - 数据表格</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="../../css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="../../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+
+    <link href="../../css/animate.css" rel="stylesheet">
+    <link href="../../css/style.css?v=4.1.0" rel="stylesheet">
+    <link rel="stylesheet" href="../../zoomify/zoomify.min.css">
+    <script type="text/javascript" src="../../js/jquery.min.3.2.1.js"></script>
+    <script type="text/javascript" src="../../js/getDate.js"></script>
+    <link rel="stylesheet" href="../../../css/page/easyhelper.min.css">
+    <!--<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"></script>-->
+    <script src="../../../js/page/jquery.transit.min.js"></script>
+    <script src="../../../js/page/es6-shim.min.js"></script>
+    <script src="../../../js/page/easyhelper.min.js"></script>
+    <script src="../../../js/page/comment.js"></script>
+    <script type="text/javascript" src="../../../js/layer-v3.0.3/layer/layer.js"></script>
+    <link rel="stylesheet" href="../../../css/comment.css">
+    <script type="text/javascript" src="engagement_management.js"></script>
+    <style>
+        #activityDetail {
+            position: fixed;
+            z-index: 10;
+            top: 100px;
+            display: none;
+        }
+        #rejected {
+            position: fixed;
+            top: 100px;
+            z-index: 20;
+            display: none;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="col-4 offset-4 unified-closed" id="rejected">
+                <div class="form-row">
+                    <div class="col-12 operationBody">
+                        <div class="form-row" style="overflow: hidden">
+                            <div class="col-12 data-top">
+                                <div class="form-row">
+                                    <div class="col-4"><label class="col-form-label">审核不通过</label></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row" style="margin-top: 40px; margin-bottom: 40px">
+                            <div class="col-10 offset-1 number">
+                                <div class="form-row content">
+                                    <div class="col-3">
+                                        <label class="col-form-label">不通过理由：</label>
+                                    </div>
+                                    <div class="col-6 offset-1">
+                                        <input class="form-control" id="reason" type="text" width="100%">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-10 offset-1" style="margin-bottom: 20px">
+                                <div class="form-row">
+                                    <div class="col-3 offset-1">
+                                        <button class="btn confirmButton" id="withdrawal_confirm">确定</button>
+                                    </div>
+                                    <div class="col-3 offset-2">
+                                        <button class="btn confirmButton cancel">取消</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4 offset-4 unified-closed" id="activityDetail">
+                <div class="form-row">
+                    <div class="col-12 operationBody">
+                        <div class="form-row" style="overflow: hidden">
+                            <div class="col-12 data-top">
+                                <div class="form-row">
+                                    <div class="col-4"><label class="col-form-label">活动详情</label></div>
+                                    <div class="col-1 offset-6 cancel"><img src="../../img/close.png" width="60%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-12">
+                                <div class="form-row" style="margin-top: 20px">
+                                    <div class="col-3">
+                                        <label class="col-form-label">活动名称：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label" name="name"></label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3">
+                                        <label class="col-form-label">活动类型：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label" name="classifyName"></label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3">
+                                        <label class="col-form-label">活动主题：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label" name="themeName"></label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3">
+                                        <label class="col-form-label">发起人：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label" name="userName"></label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3">
+                                        <label class="col-form-label">联系方式：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label" name="userPhone"></label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3">
+                                        <label class="col-form-label">活动对象：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label" name="limitSex"></label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3">
+                                        <label class="col-form-label">截止时间：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label" name="applyEndTime"></label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3">
+                                        <label class="col-form-label">活动时间：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label"><span name="beginTime"></span>~<span name="endTime"></span></label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3">
+                                        <label class="col-form-label">活动地址：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label" name="addrDetail"></label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3">
+                                        <label class="col-form-label">活动内容：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label" name="content"></label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3">
+                                        <label class="col-form-label">活动收费：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label" name="feeStatus"></label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3">
+                                        <label class="col-form-label">单人费用：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label"><span name="singleFee"></span>元</label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3">
+                                        <label class="col-form-label">活动人数：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label"><span name="minNumber"></span>~<span name="maxNumber"></span>人</label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3">
+                                        <label class="col-form-label">审核状态：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label" name="checkStatus"></label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3">
+                                        <label class="col-form-label">更新时间：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label" name="updateTime"></label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3">
+                                        <label class="col-form-label">创建时间：</label>
+                                    </div>
+                                    <div class="col-7">
+                                        <label class="col-form-label" name="createTime"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-10 offset-1" style="margin-bottom: 20px;margin-top: 20px">
+                                <div class="form-row">
+                                    <div class="col-3 offset-1">
+                                        <button class="btn confirmButton cancel detail">确定</button>
+                                        <button class="btn confirmButton" id="getThrough">通过</button>
+                                    </div>
+                                    <div class="col-3 offset-2">
+                                        <button class="btn confirmButton cancel detail">取消</button>
+                                        <button class="btn confirmButton" id="noThrough">不通过</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ibox float-e-margins pageBody">
+                <div class="ibox-title">
+                    <h5>约活动列表
+                        <!--<small>分类，查找</small>-->
+                    </h5>
+                    <div class="ibox-tools">
+                        <input id="userId" type="hidden" th:value="${msUserId}">
+                        <input id="resourceId" type="hidden" th:value="${msResourceId}"/>
+                    </div>
+                </div>
+                <div class="screen">
+                    <div>
+                        <h1>活动名称</h1>
+                        <input id="name" type="text"/>
+                    </div>
+                    <div>
+                        <h1>发起人姓名</h1>
+                        <input id="userName" type="text"/>
+                    </div>
+                    <div>
+                        <h1>手机号</h1>
+                        <input id="phone" oninput = "value=value.replace(/[^\d]/g,'')" maxlength="11" type="text"/>
+                    </div>
+                    <div>
+                        <h1>活动类型</h1>
+                        <select id="atCtgyId">
+                            <option value="">--请选择--</option>
+                        </select>
+                    </div>
+                    <div>
+                        <h1>活动主题</h1>
+                        <select id="atInviteThemeId">
+                            <option value="">--请选择--</option>
+                        </select>
+                    </div>
+                    <div>
+                        <h1>审核状态</h1>
+                        <select id="checkStatus">
+                            <option value="">--请选择--</option>
+                            <option value="-1">--审核不通过--</option>
+                            <option value="0">--审核中--</option>
+                            <option value="1">--审核通过--</option>
+                        </select>
+                    </div>
+                    <div>
+                        <h1>起始时间</h1>
+                        <input id="beginDate" type="date" style="height: 30px;border-radius: 5px;"/>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div id="bottom-left">
+                        <!--<input id="add" type="button" value="新增">-->
+                        <!--<input type="button" value="编辑">-->
+                        <!--<input type="button" value="管理">-->
+                    </div>
+                    <!--<div class="manage_date">-->
+                        <!--&lt;!&ndash;<input type="button" value="管理">&ndash;&gt;-->
+                    <!--</div>-->
+                    <div id="bottom-right">
+                        <!--<input type="button" value="筛选">-->
+                        <!--<input type="button" value="刷新">-->
+                    </div>
+                    <div class="bottom_manage">
+                        <!--<input type="button" value="重置密码"/>-->
+                        <!--<br/>-->
+                        <!--<input type="button" value="关联角色"/>-->
+                    </div>
+                    <!--<div class="button-left">新增</div>-->
+                    <!--<div class="button-left">编辑</div>-->
+                    <!--<div class="button-left">筛选</div>-->
+                    <!--<div id="screen" class="button-right">筛选</div>-->
+                    <!--<div class="button-right">刷新</div>-->
+                    <!--<div class="button-right">管理</div>-->
+                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox" id="checkAll"></th>
+                            <th>活动名称</th>
+                            <th>活动类型</th>
+                            <th>活动主题</th>
+                            <th>发起人</th>
+                            <th>联系电话</th>
+                            <th>活动结束时间</th>
+                            <th>报名结束时间</th>
+                            <th>活动地点</th>
+                            <th>审核状态</th>
+                            <th>报名人数</th>
+                            <th>创建时间</th>
+                        </tr>
+                        </thead>
+                        <tbody id="admin">
+                        </tbody>
+                    </table>
+                    <!--<div class="content">-->
+                        <!--<ul>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                    <div class="page" id="page" style="text-align:center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="../../js/jquery.min.js?v=2.1.4"></script>
+<script src="../../js/bootstrap.min.js?v=3.3.6"></script>
+
+
+<script src="../../js/plugins/jeditable/jquery.jeditable.js"></script>
+
+<!-- 自定义js -->
+<script src="../../js/content.js?v=1.0.0"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ynw.system.dao.OptLogMapper">
+    <resultMap id="commentResultMap" type="com.ynw.system.entity.OptLog">
+        <id column="ms_opt_log_id" property="msOptLogId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="ms_user_id" property="msUserId"/>
+        <result column="login_ip" property="loginIp"/>
+        <result column="content" property="content"/>
+        <association property="msUserName" column="ms_user_id" select="selectUserName"/>
+    </resultMap>
+    <select id="selectUserName" resultType="java.lang.String">
+      SELECT real_name FROM t_ms_user WHERE ms_user_id=#{ms_user_id}
+    </select>
+    <select id="conditionQueryOptLog" resultMap="commentResultMap">
+        SELECT * FROM t_ms_opt_log
+        <where>
+            <if test="null != optLog.msUserId">
+                ms_user_id LIKE CONCAT('%',#{optLog.msUserId},'%')
+            </if>
+            <if test="null != beginDate">
+                AND create_time > #{beginDate}
+            </if>
+            <if test="null != endDate">
+                AND create_time <![CDATA[< ]]> #{endDate}
+            </if>
+        </where>
+        ORDER BY create_time DESC LIMIT #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(ms_opt_log_id) FROM t_ms_opt_log
+        <where>
+            <if test="null != optLog.msUserId">
+                ms_user_id LIKE CONCAT('%',#{optLog.msUserId},'%')
+            </if>
+            <if test="null != beginDate">
+                AND create_time > #{beginDate}
+            </if>
+            <if test="null != endDate">
+                AND create_time <![CDATA[< ]]> #{endDate}
+            </if>
+        </where>
+    </select>
+</mapper>
